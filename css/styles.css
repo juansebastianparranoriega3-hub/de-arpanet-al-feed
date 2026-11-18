@@ -801,3 +801,6 @@ input:focus, select:focus { border-color: #3E4F96; box-shadow: 0 0 0 4px rgba(10
   .brand-name { font-size: 1rem; }
   .chip-estudiante { max-width: 12ch; }
 }
+
+/* El foco que se mueve por código a los títulos (tabindex=-1) no muestra recuadro */
+[tabindex="-1"]:focus, [tabindex="-1"]:focus-visible { outline: none; box-shadow: none; }
