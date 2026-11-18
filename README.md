@@ -93,6 +93,10 @@ Pasos para la docente:
 
 La misma guía está en el panel docente y, sin datos del curso, en el enlace "¿Eres docente? Mira cómo retroalimentar con IA" de la bienvenida.
 
+### Casos de prueba (los del documento)
+
+La guía docente incluye los dos casos con los que se probó la skill en el documento de la actividad: un **caso habitual** (respuesta sobre la World Wide Web con datos completos) y un **caso difícil** (respuesta con un error histórico, sin hito ni pregunta, y con la petición de poner nota). Cada uno trae el mensaje exacto para copiar en Tutor Feed, lo que se esperaba y qué se ajustó. En el panel docente, el botón **Cargar registros de prueba** agrega dos filas marcadas como *Prueba* y deja sus respuestas separadas en bloques; **Quitar registros de prueba** borra solo esas filas.
+
 ## Publicar en GitHub Pages
 
 El sitio es estático y usa rutas relativas, así que funciona en https://juansebastianparranoriega3-hub.github.io/de-arpanet-al-feed/.
