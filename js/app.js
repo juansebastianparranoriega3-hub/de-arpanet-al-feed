@@ -212,7 +212,7 @@ function mostrarPantalla(id, mensaje) {
 function actualizarMapa() {
   const n = estado.explorados.size;
   document.getElementById("progreso-texto").textContent = `${String(n).padStart(2, "0")} / 04 explorados`;
-  document.getElementById("progreso-barra").style.width = `${(n / 4) * 100}%`;
+  document.getElementById("progreso-barra").style.transform = `scaleX(${n / 4})`;
   const titulo = document.getElementById("mapa-mensaje-titulo");
   titulo.textContent = n === 4 ? "Mapa completo." : `Faltan ${4 - n} hito${4 - n === 1 ? "" : "s"} por explorar.`;
   document.querySelector('[data-action="go-actividad"]').disabled = n < 4;
@@ -251,7 +251,7 @@ function abrirHito(numero) {
 
   const audio = document.getElementById("hito-audio");
   audio.src = h.audio; audio.currentTime = 0;
-  document.getElementById("audio-progress-fill").style.width = "0%";
+  document.getElementById("audio-progress-fill").style.transform = "scaleX(0)";
   document.getElementById("audio-estado").textContent = "Narración corta";
   document.getElementById("audio-detalle").textContent = "también puedes leer la transcripción";
   document.querySelector('[data-action="play-audio"]').setAttribute("aria-pressed", "false");
@@ -387,12 +387,12 @@ function inicializarAudio() {
   audio.addEventListener("pause", () => { if (!audio.ended) { btn.setAttribute("aria-pressed", "false"); estadoTxt.textContent = "Narración pausada"; } });
   audio.addEventListener("timeupdate", () => {
     if (!audio.duration) return;
-    fill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+    fill.style.transform = `scaleX(${audio.currentTime / audio.duration})`;
   });
   audio.addEventListener("ended", () => {
     btn.setAttribute("aria-pressed", "false");
     estadoTxt.textContent = "Narración completa"; detalle.textContent = "puedes repetirla o leer la transcripción";
-    fill.style.width = "100%"; replay.hidden = false;
+    fill.style.transform = "scaleX(1)"; replay.hidden = false;
   });
 }
 
@@ -581,6 +581,10 @@ function colocarBloque(bloque, ranura) {
   ranura.classList.add("tiene-bloque");
   ranura.querySelector(".ranura-contenido").textContent = "";
   ranura.appendChild(bloque);
+  bloque.classList.remove("is-encajando");
+  void bloque.offsetWidth;
+  bloque.classList.add("is-encajando");
+  bloque.addEventListener("animationend", () => bloque.classList.remove("is-encajando"), { once: true });
   ranura.setAttribute("aria-label", `Ranura de ${ranura.dataset.tipo}, con un bloque colocado`);
   bloqueSeleccionado = null;
   anunciar(`Bloque colocado en ${ranura.dataset.tipo}.`);
@@ -925,47 +929,44 @@ function construirReporteHTML() {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reporte de desempeño — ${escaparHTML(estado.nombreEstudiante || "Estudiante")}</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap">
 <style>
   :root { --paper:#EEF1FA; --sheet:#FBFCFF; --band:#DFE6F7; --ink:#1D2347; --ink-2:#454D78; --rule:#CAD1E8; --red:#99563F; --green:#2B6A57; --green-bg:#D7ECE5; --rose-gold:#C99A84; --on-dark:#EEF1FA; --on-dark-2:#D3D9F2; --grad-box:linear-gradient(170deg, #232B5E 0%, #2F3B7C 45%, #3E4F96 100%);
-    --serif:"Newsreader", Georgia, "Times New Roman", serif; --sans:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif; --mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace; }
+    --serif:"Fraunces", Georgia, "Times New Roman", serif; --sans:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif; --mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace; }
   * { box-sizing: border-box; }
   body { font-family: var(--sans); background: var(--paper); color: var(--ink); margin: 0; padding: 32px 16px; line-height: 1.55; }
-  .reporte { max-width: 760px; margin: 0 auto; background: var(--sheet); border: 1px solid var(--rule); position: relative; padding: 0 44px 28px; }
-  .reporte::before, .reporte::after { content: ""; position: absolute; top: 0; bottom: 0; width: 28px; background: radial-gradient(circle at 50% 50%, var(--paper) 5px, transparent 5.5px) 0 6px / 28px 24px repeat-y; border-right: 1px dashed var(--rule); }
-  .reporte::before { left: 0; }
-  .reporte::after { right: 0; border-right: 0; border-left: 1px dashed var(--rule); }
-  header { position: relative; z-index: 1; margin: 0 -16px; padding: 28px 20px 22px; background: var(--grad-box); color: var(--on-dark); border-bottom: 2px solid var(--rose-gold); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .kicker { font-family: var(--mono); font-size: 0.75rem; color: var(--on-dark-2); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 14px; }
-  h1 { font-family: var(--serif); font-weight: 500; font-size: 2.1rem; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
-  h1 em { color: var(--rose-gold); font-style: normal; }
+  .reporte { max-width: 760px; margin: 0 auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: 22px; overflow: hidden; position: relative; padding: 0 32px 28px; box-shadow: 0 22px 44px -22px rgba(29,35,71,.45); }
+  header { position: relative; z-index: 1; margin: 0 -32px; padding: 30px 32px 24px; background: var(--grad-box); color: var(--on-dark); border-bottom: 2px solid var(--rose-gold); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .kicker { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--on-dark-2); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 14px; }
+  h1 { font-family: var(--serif); font-weight: 300; font-size: 2.4rem; line-height: 1; margin: 0; letter-spacing: -0.02em; }
+  h1 em { color: var(--rose-gold); font-style: italic; font-weight: 300; }
   .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; margin: 18px 0 0; border: 1px solid rgba(201,154,132,.6); }
   .meta div { padding: 10px 12px; border-right: 1px solid rgba(201,154,132,.6); }
   .meta div:last-child { border-right: 0; }
-  .meta span { display: block; font-family: var(--mono); font-size: 0.75rem; color: var(--on-dark-2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .meta span { display: block; font-size: 0.75rem; font-weight: 700; color: var(--on-dark-2); text-transform: uppercase; letter-spacing: 0.06em; }
   .meta strong { font-size: 0.98rem; overflow-wrap: anywhere; }
   .meta .codigo strong { font-family: var(--mono); letter-spacing: 0.04em; }
   section { padding: 20px 0; border-bottom: 1px solid var(--rule); }
-  section:nth-of-type(even) { background: linear-gradient(var(--band), var(--band)) no-repeat; background-size: 100% 100%; margin: 0 -16px; padding: 20px 16px; }
-  h2 { font-family: var(--serif); font-weight: 500; font-size: 1.2rem; margin: 0 0 12px; }
+  section:nth-of-type(even) { background: linear-gradient(160deg, #F4F6FD, #E4EAFA); margin: 0 -32px; padding: 20px 32px; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: 1.15rem; margin: 0 0 12px; }
   .nota-hero { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
-  .nota-numero { font-family: var(--serif); font-size: 3.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
-  .nota-numero small { font-family: var(--mono); font-size: 0.85rem; color: var(--ink-2); margin-left: 4px; }
+  .nota-numero { font-family: var(--serif); font-weight: 300; font-size: 3.8rem; line-height: 1; font-variant-numeric: tabular-nums; }
+  .nota-numero small { font-size: 0.9rem; color: var(--ink-2); margin-left: 4px; }
   .nota-nivel { display: inline-block; background: var(--grad-box); border: 1px solid var(--rose-gold); color: var(--on-dark); font-weight: 700; padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; }
   .nota-texto { flex: 1 1 260px; }
   .nota-texto p { margin: 8px 0 0; font-size: 0.94rem; }
   .barra-fila { margin: 12px 0; }
   .barra-fila .etiqueta { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; }
-  .barra-fila .etiqueta strong { font-family: var(--mono); }
-  .barra-track { background: repeating-linear-gradient(90deg, transparent 0 calc(20% - 1px), var(--rule) calc(20% - 1px) 20%), #fff; border: 1px solid var(--rule); height: 12px; }
-  .barra-fill { background: var(--ink); height: 100%; }
+  .barra-fila .etiqueta strong { font-variant-numeric: tabular-nums; }
+  .barra-track { background: var(--band); border-radius: 999px; height: 10px; overflow: hidden; }
+  .barra-fill { background: linear-gradient(90deg, #2F3B7C, #6C7EC8); height: 100%; border-radius: 999px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   ul { margin: 12px 0 0; padding-left: 1.2em; font-size: 0.9rem; color: var(--ink-2); }
   .fila { border-top: 1px dashed var(--rule); padding: 12px 0; }
   .fila:first-of-type { border-top: none; padding-top: 0; }
   .fila strong { display: block; }
   .fila span { color: var(--ink-2); font-size: 0.94rem; }
-  .aviso { font-size: 0.8rem; color: var(--ink-2); text-align: center; margin: 22px 0 0; font-family: var(--mono); }
-  @media (max-width: 560px) { .reporte { padding: 0 34px 24px; } .reporte::before, .reporte::after { width: 20px; background-size: 20px 24px; } h1 { font-size: 1.7rem; } }
+  .aviso { font-size: 0.8rem; color: var(--ink-2); text-align: center; margin: 22px 0 0; }
+  @media (max-width: 560px) { .reporte { padding: 0 18px 24px; } header { margin: 0 -18px; padding: 24px 18px 20px; } section:nth-of-type(even) { margin: 0 -18px; padding: 20px 18px; } h1 { font-size: 1.7rem; } }
   @media print { body { padding: 0; background: #fff; } .reporte { border: 0; } section:nth-of-type(even) { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
@@ -1075,7 +1076,7 @@ function generarResumen() {
   const d = calcularDesempeno();
   document.getElementById("desempeno-nivel").textContent = d.nivel;
   const nota = calcularNota();
-  document.getElementById("desempeno-numero").textContent = nota.promedio.toFixed(1);
+  animarNota(document.getElementById("desempeno-numero"), nota.promedio);
   const detalleWrap = document.getElementById("desempeno-detalle");
   const avisoRepetido = repetido
     ? `<p><strong>Nota del primer recorrido:</strong> repetiste la ruta para practicar; la nota y el código corresponden a tu primer recorrido.</p>`
@@ -1115,7 +1116,7 @@ function renderTimeline() {
   const lista = document.getElementById("timeline");
   lista.innerHTML = Object.entries(HITOS).map(([n, h], i) => `
     <li class="milestone" style="--i:${i}">
-      <span class="milestone-node" aria-hidden="true"></span>
+      <span class="milestone-node" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="node-check" d="M6.5 12.5l3.8 3.8 7.2-8"/></svg></span>
       <button class="milestone-card" data-hito="${n}">
         <span class="node-top">
           <span class="node-number">${String(n).padStart(2, "0")} · ${escaparHTML(h.anio)}</span>
@@ -1148,12 +1149,39 @@ function actualizarRail() {
     "screen-propuesta": "propuesta",
     "screen-cierre": "cierre",
   }[pantalla];
+  let hechosTotal = 0;
   rail.querySelectorAll("li").forEach((li) => {
     const paso = li.dataset.paso;
     const hecho = /^\d$/.test(paso) ? estado.explorados.has(Number(paso)) : !!hechos[paso];
     li.classList.toggle("is-done", hecho);
+    if (hecho) hechosTotal += 1;
     li.classList.toggle("is-current", paso === actual);
   });
+  const relleno = document.querySelector(".rail-fill");
+  if (relleno) relleno.style.transform = `scaleX(${hechosTotal / 7})`;
+}
+
+// ============================================================
+// NOTA ANIMADA — cuenta de 0 a la nota (sin movimiento si se pidió reducirlo)
+// ============================================================
+const MOVIMIENTO_REDUCIDO = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function animarNota(el, valor) {
+  const final = valor.toFixed(1);
+  el.setAttribute("aria-label", `${final} sobre 5.0`);
+  if (MOVIMIENTO_REDUCIDO || document.hidden) { el.textContent = final; return; }
+  // Respaldo: si el navegador pausa los cuadros, el valor final llega igual.
+  window.setTimeout(() => { el.textContent = final; }, 700);
+  const inicio = performance.now();
+  const duracion = 600;
+  const paso = (t) => {
+    const p = Math.min(1, (t - inicio) / duracion);
+    const suav = 1 - Math.pow(1 - p, 3);
+    el.textContent = p < 1 ? (valor * suav).toFixed(1) : final;
+    if (p < 1) requestAnimationFrame(paso);
+  };
+  el.textContent = "0.0";
+  requestAnimationFrame(paso);
 }
 
 // ============================================================
