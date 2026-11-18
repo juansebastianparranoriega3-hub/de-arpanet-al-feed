@@ -1447,6 +1447,48 @@ function montarGuias() {
     const destino = document.getElementById(id);
     if (destino && plantilla) destino.appendChild(plantilla.content.cloneNode(true));
   });
+  document.querySelectorAll(".guia-casos-lista").forEach((lista) => renderCasosPrueba(lista));
+}
+
+// Casos de prueba documentados: mensaje exacto + qué se esperaba + qué pasó.
+function renderCasosPrueba(lista) {
+  lista.innerHTML = "";
+  CASOS_PRUEBA.forEach((caso, i) => {
+    const li = document.createElement("li");
+    li.style.setProperty("--i", i);
+    const art = document.createElement("article");
+    art.className = "bloque-skill caso-prueba";
+    const head = document.createElement("div");
+    head.className = "bloque-skill-head";
+    const titulo = document.createElement("strong");
+    titulo.textContent = caso.titulo;
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = "button button-secondary";
+    boton.dataset.action = "copiar-bloque";
+    boton.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg> Copiar para Tutor Feed';
+    boton.setAttribute("aria-label", `Copiar para Tutor Feed: ${caso.titulo}`);
+    head.append(titulo, boton);
+    const etiqueta = document.createElement("p");
+    etiqueta.className = "caso-etiqueta";
+    etiqueta.textContent = "Mensaje enviado a la skill";
+    const pre = document.createElement("pre");
+    pre.className = "bloque-texto";
+    pre.textContent = caso.mensaje;
+    const dl = document.createElement("dl");
+    dl.className = "caso-detalle";
+    const dt1 = document.createElement("dt"); dt1.textContent = "Qué se esperaba";
+    const dd1 = document.createElement("dd"); dd1.textContent = caso.esperado;
+    const dt2 = document.createElement("dt"); dt2.textContent = "Qué pasó y qué se ajustó";
+    const dd2 = document.createElement("dd");
+    const ul = document.createElement("ul");
+    caso.resultado.forEach((linea) => { const item = document.createElement("li"); item.textContent = linea; ul.appendChild(item); });
+    dd2.appendChild(ul);
+    dl.append(dt1, dd1, dt2, dd2);
+    art.append(head, etiqueta, pre, dl);
+    li.appendChild(art);
+    lista.appendChild(li);
+  });
 }
 
 function parsearBloquesSkill(texto) {
@@ -1613,6 +1655,12 @@ document.addEventListener("click", (e) => {
       copiarTexto(bloques.map((b) => b.texto).join("\n\n"), document.getElementById("resumen-escritas"), btn);
       break;
     }
+    case "cargar-prueba":
+      cargarRegistrosPrueba();
+      break;
+    case "quitar-prueba":
+      quitarRegistrosPrueba();
+      break;
     case "separar-bloques":
       separarBloquesPegados();
       break;
@@ -1818,7 +1866,7 @@ function renderTablaDocente() {
   cuerpo.innerHTML = registros
     .map((r, i) => `
       <tr>
-        <td>${escaparHTML(r.nombre)}</td>
+        <td>${escaparHTML(r.nombre)}${r.prueba ? ' <span class="chip-prueba">Prueba</span>' : ""}</td>
         <td>${escaparHTML(r.fecha)}</td>
         <td>${escaparHTML((Number(r.promedio) || 0).toFixed(1))}</td>
         <td><span class="docente-nivel-chip">${escaparHTML(r.nivel)}</span></td>
@@ -1871,6 +1919,30 @@ function agregarRegistroDocente(evento) {
   anunciar(`${nombre} agregado al dashboard de desempeño.`);
 }
 
+// Registros de prueba: solo se agregan con su botón y solo se quitan esas filas.
+function cargarRegistrosPrueba() {
+  const reales = leerRegistrosDocente().filter((r) => !r.prueba);
+  const fecha = new Date().toLocaleDateString("es-CO", { year: "numeric", month: "short", day: "numeric" });
+  const pruebas = REGISTROS_PRUEBA.map((p) => {
+    const codigo = generarCodigoDesde(p.nombre, p.conteos);
+    const d = decodificarCodigoDesempeno(codigo, p.nombre);
+    return { nombre: p.nombre, codigo: d.codigo, promedio: d.nota.promedio, nivel: d.desempeno.nivel, fecha, prueba: true };
+  });
+  guardarRegistrosDocente([...pruebas, ...reales]);
+  renderTablaDocente();
+  document.getElementById("input-pegar").value = REGISTROS_PRUEBA.map((p) => p.bloque).join("\n\n");
+  separarBloquesPegados();
+  anunciar("Se cargaron 2 registros de prueba y sus respuestas quedaron separadas en bloques.");
+}
+
+function quitarRegistrosPrueba() {
+  const registros = leerRegistrosDocente();
+  const reales = registros.filter((r) => !r.prueba);
+  guardarRegistrosDocente(reales);
+  renderTablaDocente();
+  anunciar(`${registros.length - reales.length} registro(s) de prueba quitados. Los registros reales no cambiaron.`);
+}
+
 function eliminarRegistroDocente(indice) {
   const registros = leerRegistrosDocente();
   if (indice < 0 || indice >= registros.length) return;
@@ -1892,8 +1964,8 @@ function exportarCSVDocente() {
     window.alert("Aún no hay registros para exportar.");
     return;
   }
-  const encabezado = ["Estudiante", "Fecha", "Nota", "Nivel", "Código"];
-  const filas = registros.map((r) => [r.nombre, r.fecha, r.promedio.toFixed(1), r.nivel, r.codigo]);
+  const encabezado = ["Estudiante", "Fecha", "Nota", "Nivel", "Código", "Tipo de registro"];
+  const filas = registros.map((r) => [r.nombre, r.fecha, (Number(r.promedio) || 0).toFixed(1), r.nivel, r.codigo, r.prueba ? "Prueba" : "Real"]);
   const csv = [encabezado, ...filas]
     .map((fila) => fila.map((celda) => `"${String(celda).replace(/"/g, '""')}"`).join(","))
     .join("\r\n");

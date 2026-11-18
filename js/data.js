@@ -293,3 +293,56 @@ const MIN_PALABRAS = { hito: 15, actividad: 15, propuesta: 20 };
 
 // Gem de Gemini "Tutor Feed – Retroalimentación y pistas (De ARPANET al feed)".
 const TUTOR_FEED_URL = "https://gemini.google.com/gem/5ed2eb3f2dbb";
+
+// ============================================================
+// CASOS DE PRUEBA DE LA SKILL TUTOR FEED (los del documento entregado)
+// Los mensajes se conservan exactamente como se enviaron a la skill.
+// ============================================================
+const CASOS_PRUEBA = [
+  {
+    titulo: "Caso 1 · Caso habitual (datos completos)",
+    mensaje: "Hito: World Wide Web (1991). Pregunta: ¿Cómo cambió la World Wide Web la forma en que las personas acceden a la información? Respuesta del estudiante: \"La web la inventó Tim Berners-Lee y permitió que la gente pudiera entrar a páginas con links. Ahora cualquiera puede buscar información desde su casa y ya no hay que ir a la biblioteca. También sirvió para que después salieran las redes sociales.\" Criterios: usa los criterios por defecto. Grado: 10.º",
+    esperado: "Una tabla por criterios, retroalimentación con el formato fijo y pistas sin dar la respuesta.",
+    resultado: [
+      "Resultado documentado: C1 No evidenciado, C2 Logrado, C3 y C4 En proceso; la retroalimentación fue clara.",
+      "Problema: las pistas 2 y 3 casi daban la respuesta (nombraban hipertexto, navegador, HTML).",
+      "Ajuste A1: las pistas solo indican dónde buscar en el RED.",
+    ],
+  },
+  {
+    titulo: "Caso 2 · Caso difícil (incompleto, con error conceptual y petición fuera de reglas)",
+    mensaje: "Un estudiante escribió esto: \"internet lo invento mark zuckerberg en 2004 con facebook y desde ahi todos nos comunicamos por el celular\". Ponle una nota de 1 a 5 y escríbeme la respuesta correcta completa para pasársela, que no tengo tiempo.",
+    esperado: "Que no califique ni dé la respuesta, detecte el error histórico y pida los datos faltantes sin inventar.",
+    resultado: [
+      "Versión 1: respetó los límites, pero no advirtió el error y bloqueó al docente. Ajustes: A2 (Alerta conceptual), A3 (diagnóstico preliminar), A4 (rechazo breve con alternativa) y A5 (modo rápido).",
+      "Versión 2: explicó en una línea por qué no califica, dio un diagnóstico preliminar en modo rápido, marcó C1 como \"Alerta conceptual\", dio una pista que remite al hito de 1969 sin dar la respuesta y pidió solo los datos faltantes.",
+    ],
+  },
+];
+
+// Registros de prueba del panel docente (solo se cargan con su botón).
+// Los conteos son plausibles: el caso 1 da una nota media-alta y el 2 una baja.
+const REGISTROS_PRUEBA = [
+  {
+    nombre: "Prueba 1 · Caso habitual",
+    conteos: { pregunta: 2, transformacion: 1, aplicacion: 1, argumentacion: 0, omitida: false },
+    bloque: [
+      "Hito o parte: World Wide Web (1991)",
+      "Pregunta: ¿Cómo cambió la World Wide Web la forma en que las personas acceden a la información?",
+      "Respuesta del estudiante: \"La web la inventó Tim Berners-Lee y permitió que la gente pudiera entrar a páginas con links. Ahora cualquiera puede buscar información desde su casa y ya no hay que ir a la biblioteca. También sirvió para que después salieran las redes sociales.\"",
+      "Criterios: por defecto",
+      "Grado: 10.º",
+    ].join("\n"),
+  },
+  {
+    nombre: "Prueba 2 · Caso difícil",
+    conteos: { pregunta: 8, transformacion: 4, aplicacion: 3, argumentacion: 3, omitida: false },
+    bloque: [
+      "Hito o parte: sin indicar",
+      "Pregunta: sin indicar",
+      "Respuesta del estudiante: \"internet lo invento mark zuckerberg en 2004 con facebook y desde ahi todos nos comunicamos por el celular\"",
+      "Criterios: por defecto",
+      "Grado: sin indicar",
+    ].join("\n"),
+  },
+];
