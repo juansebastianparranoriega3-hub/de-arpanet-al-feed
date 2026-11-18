@@ -1,5 +1,7 @@
 # De ARPANET al feed
 
+**Ver el RED en línea:** https://juansebastianparranoriega3-hub.github.io/de-arpanet-al-feed/
+
 Recurso Educativo Digital (RED) web sobre cómo internet cambió la forma en que circula la información. Sigue cuatro giros tecnológicos y los convierte en una cadena de causas y efectos que termina en una pregunta: ¿qué revisas antes de compartir algo en tu feed?
 
 | | |
@@ -60,7 +62,7 @@ Tu avance se guarda en el navegador del equipo que estés usando: si recargas o 
 
 ## Publicar en GitHub Pages
 
-El sitio es estático y usa rutas relativas, así que funciona en `https://USUARIO.github.io/NOMBRE-REPO/`.
+El sitio es estático y usa rutas relativas, así que funciona en https://juansebastianparranoriega3-hub.github.io/de-arpanet-al-feed/.
 
 1. Sube el contenido de esta carpeta a la raíz de un repositorio.
 2. En **Settings → Pages**, elige la rama `main` y la carpeta `/ (root)`.
