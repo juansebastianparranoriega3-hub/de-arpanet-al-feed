@@ -279,3 +279,17 @@ const BLOQUES_EVIDENCIA = [
 ];
 
 
+
+// ============================================================
+// RESPUESTAS ESCRITAS — consignas, mínimo de palabras y skill docente
+// ============================================================
+const CONSIGNAS = {
+  hito: "¿Cuál fue la causa de este hito y qué cambió en la forma de compartir información por eso?",
+  actividad: "Explica cómo se conectan las dos transformaciones con sus hitos.",
+  propuesta: "Defiende tu recomendación con tus palabras, usando al menos un hito como evidencia.",
+};
+
+const MIN_PALABRAS = { hito: 15, actividad: 15, propuesta: 20 };
+
+// Gem de Gemini "Tutor Feed – Retroalimentación y pistas (De ARPANET al feed)".
+const TUTOR_FEED_URL = "https://gemini.google.com/gem/5ed2eb3f2dbb";

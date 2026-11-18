@@ -53,6 +53,9 @@ const estado = {
   propuestaValidada: null,
   propuestaOmitida: false,
   nombreEstudiante: "",
+  grado: "",
+  // Explicaciones escritas del estudiante (nunca entran en el código RD).
+  explicaciones: { hito: {}, actividad: "", propuesta: "" },
   codigoDesempeno: null,
   // Resultado del PRIMER recorrido completo (se fija al llegar al cierre por
   // primera vez); "Recorrer de nuevo" no lo borra.
@@ -79,14 +82,17 @@ function escaparHTML(valor) {
 // GUARDADO DEL PROGRESO (localStorage). Si el navegador no permite
 // guardar, el recurso sigue funcionando sin persistencia.
 // ============================================================
-const PROGRESO_KEY = "red1011n25_progreso";
+// v2: añade grado y explicaciones escritas (por eso cambia la clave).
+const PROGRESO_KEY = "red1011n25_progreso_v2";
 
 function guardarProgreso() {
   if (typeof restaurandoProgreso !== "undefined" && restaurandoProgreso) return;
   try {
     const datos = {
-      v: 1,
+      v: 2,
       nombre: estado.nombreEstudiante,
+      grado: estado.grado,
+      explicaciones: estado.explicaciones,
       explorados: Array.from(estado.explorados),
       intentosPregunta: estado.intentosPregunta,
       opcionesFallidas: estado.opcionesFallidas,
@@ -164,7 +170,7 @@ function aplicarNombre(crudo) {
   } else {
     ayuda.hidden = true;
   }
-  document.getElementById("btn-iniciar").disabled = !r.valido;
+  actualizarBotonInicio();
   if (r.valido) {
     estado.nombreEstudiante = r.nombre;
     const chip = document.getElementById("chip-estudiante");
@@ -199,7 +205,7 @@ function mostrarPantalla(id, mensaje) {
   if (titulo) window.setTimeout(() => titulo.focus(), 30);
   if (mensaje) anunciar(mensaje);
   document.getElementById("main").scrollIntoView({ block: "start" });
-  if (id !== "screen-docente") {
+  if (id !== "screen-docente" && id !== "screen-guia") {
     estado.pantalla = id;
     guardarProgreso();
   }
@@ -262,7 +268,8 @@ function abrirHito(numero) {
   // cada apertura, para que no sea siempre la misma (evita memorizar/copiar).
   // Si el hito ya se resolvió, se muestra la misma pregunta ya resuelta (sin
   // posibilidad de sumar errores al reabrirlo).
-  const yaResuelto = estado.explorados.has(numero);
+  // "Respondido" = acertó la pregunta; "explorado" = además guardó su explicación.
+  const yaResuelto = Number.isInteger(estado.varianteResuelta[numero]);
   let indiceVariante = yaResuelto && Number.isInteger(estado.varianteResuelta[numero])
     ? estado.varianteResuelta[numero]
     : Math.floor(Math.random() * h.preguntas.length);
@@ -302,6 +309,7 @@ function abrirHito(numero) {
     bloquearOpcionesHito();
     document.getElementById("hito-feedback").innerHTML = `<p class="fb-correcta">Ya resolviste este hito. ${escaparHTML(variante.feedbackCorrecto)}</p>`;
   }
+  prepararExplicacion("hito", yaResuelto, estado.explicaciones.hito[numero] || "");
 
   mostrarPantalla("screen-hito", `Hito ${numero}: ${h.titulo}.${yaResuelto ? " Ya resuelto." : ""}`);
 }
@@ -318,7 +326,7 @@ function responderPregunta(numero, indice) {
   const opcionesWrap = document.getElementById("hito-opciones");
   const elegido = opcionesWrap.querySelector(`[data-index="${indice}"]`);
   // Tras acertar (o en un hito ya resuelto) las opciones quedan bloqueadas.
-  if (!elegido || elegido.disabled || estado.explorados.has(numero)) return;
+  if (!elegido || elegido.disabled || Number.isInteger(estado.varianteResuelta[numero])) return;
   opcionesWrap.querySelectorAll(".answer-option").forEach((b) => {
     b.classList.remove("is-correcta", "is-incorrecta", "is-shake");
     b.setAttribute("aria-checked", "false");
@@ -331,12 +339,10 @@ function responderPregunta(numero, indice) {
     btn.classList.add("is-correcta");
     feedback.innerHTML = `<p class="fb-correcta">Respuesta correcta. ${escaparHTML(variante.feedbackCorrecto)}</p>`;
     bloquearOpcionesHito();
-    if (!estado.explorados.has(numero)) {
-      estado.explorados.add(numero);
-      estado.varianteResuelta[numero] = estado.indiceVarianteActual;
-      marcarTarjetaExplorada(numero);
-      actualizarMapa();
-    }
+    // El hito queda "explorado" cuando el estudiante guarda su explicación escrita.
+    estado.varianteResuelta[numero] = estado.indiceVarianteActual;
+    prepararExplicacion("hito", true, estado.explicaciones.hito[numero] || "", true);
+    anunciar("Respuesta correcta. Ahora explica con tus palabras la causa y el efecto de este hito.");
   } else {
     btn.classList.add("is-incorrecta", "is-shake");
     btn.addEventListener("animationend", () => btn.classList.remove("is-shake"), { once: true });
@@ -460,7 +466,8 @@ function validarActividad() {
     : `<p>Hay una relación por revisar. La respuesta correcta distingue la tecnología que hizo posible el cambio del cambio social que vino después.</p>
        <ul class="retro-pistas">${pistasErrores.map((e) => `<li><strong>Relación ${String(e.num).padStart(2, "0")}: ${escaparHTML(e.texto)}</strong><br>Pista: ${escaparHTML(e.pista)}</li>`).join("")}</ul>`;
 
-  document.getElementById("btn-resumen").disabled = !todasCorrectas;
+  prepararExplicacion("actividad", todasCorrectas, estado.explicaciones.actividad, todasCorrectas);
+  document.getElementById("btn-resumen").disabled = !(todasCorrectas && explicacionValida("actividad"));
   if (todasCorrectas) estado.resultadoFinal = evidencia;
   guardarProgreso();
 
@@ -684,6 +691,8 @@ function validarPropuesta() {
   document.getElementById("btn-comprobar-propuesta").hidden = esCorrecta;
   document.getElementById("btn-reintentar-propuesta").hidden = esCorrecta;
   document.getElementById("btn-ir-cierre").hidden = !esCorrecta;
+  prepararExplicacion("propuesta", esCorrecta, estado.explicaciones.propuesta, esCorrecta && !restaurandoProgreso);
+  document.getElementById("btn-ir-cierre").disabled = !explicacionValida("propuesta");
   document.getElementById("saltar-ayuda").hidden = esCorrecta;
   anunciar(esCorrecta ? "Recomendación validada." : "La combinación necesita ajuste.");
   guardarProgreso();
@@ -919,6 +928,11 @@ function construirReporteHTML() {
     ? estado.resultadoFinal.map((p) => `<div class="fila"><strong>${escaparHTML(p.transformacion)}</strong><span>Causada por ${escaparHTML(p.hito)}. ${escaparHTML(p.causa)}</span></div>`).join("")
     : `<div class="fila"><span>No se completó la actividad de relación causa-efecto.</span></div>`;
 
+  const bloquesSkill = construirBloquesSkill();
+  const escritasHTML = bloquesSkill.length
+    ? bloquesSkill.map((b) => `<div class="bloque"><div class="bloque-head"><strong>${escaparHTML(b.titulo)}</strong><button type="button" class="copiar">Copiar para Tutor Feed</button></div><pre>${escaparHTML(b.texto)}</pre></div>`).join("")
+    : `<p>No hay respuestas escritas guardadas.</p>`;
+
   const propuestaHTML = estado.propuestaValidada
     ? `<div class="fila"><strong>${escaparHTML(estado.propuestaValidada.estrategia)}</strong><span><em>Porque:</em> ${escaparHTML(estado.propuestaValidada.justificacion)}<br><em>Evidencia:</em> ${escaparHTML(estado.propuestaValidada.evidencia)}</span></div>`
     : `<div class="fila"><span>No se completó el producto final (recomendación).</span></div>`;
@@ -967,6 +981,16 @@ function construirReporteHTML() {
   .fila span { color: var(--ink-2); font-size: 0.94rem; }
   .aviso { font-size: 0.8rem; color: var(--ink-2); text-align: center; margin: 22px 0 0; }
   @media (max-width: 560px) { .reporte { padding: 0 18px 24px; } header { margin: 0 -18px; padding: 24px 18px 20px; } section:nth-of-type(even) { margin: 0 -18px; padding: 20px 18px; } h1 { font-size: 1.7rem; } }
+  .skill-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .skill-ayuda { font-size: 0.88rem; color: var(--ink-2); margin: 0 0 12px; overflow-wrap: anywhere; }
+  .bloque { border: 1px solid var(--rule); border-radius: 14px; background: #fff; padding: 12px 14px; margin: 0 0 12px; }
+  .bloque-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--ink); background: #F3F5FC; border-radius: 10px; padding: 10px 12px; }
+  button.copiar { font: inherit; font-size: 0.85rem; font-weight: 700; color: var(--on-dark); background: var(--grad-box); border: 1px solid var(--rose-gold); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  button.copiar:active { transform: scale(0.97); }
+  button.copiar:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .copiar-estado { font-size: 0.85rem; color: var(--green); font-weight: 700; min-height: 1.2em; margin: 0; }
+  @media print { button.copiar { display: none; } }
   @media print { body { padding: 0; background: #fff; } .reporte { border: 0; } section:nth-of-type(even) { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
@@ -1014,6 +1038,13 @@ function construirReporteHTML() {
     ${propuestaHTML}
   </section>
 
+  <section class="skill">
+    <div class="skill-head"><h2>Respuestas escritas para Tutor Feed</h2>${bloquesSkill.length ? '<button type="button" class="copiar" data-todo>Copiar todo</button>' : ""}</div>
+    <p class="skill-ayuda">Para la docente: abre la skill Tutor Feed (${escaparHTML(TUTOR_FEED_URL)}) y pega un bloque por mensaje. La skill da retroalimentación y pistas; no pone notas.</p>
+    ${escritasHTML}
+    <p class="copiar-estado" role="status"></p>
+  </section>
+
   <section>
     <h2>Retroalimentación y siguiente paso</h2>
     <p>${escaparHTML(d.siguientePaso)}</p>
@@ -1022,6 +1053,31 @@ function construirReporteHTML() {
   <p class="aviso">Nota referencial generada automáticamente por el RED según pistas usadas durante el recorrido. No reemplaza el criterio de evaluación docente.</p>
 
 </main>
+<script>
+(function () {
+  function seleccionar(el) { try { var r = document.createRange(); r.selectNodeContents(el); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} }
+  function aviso(t) { var e = document.querySelector(".copiar-estado"); if (e) e.textContent = t; }
+  function copiar(texto, el, btn) {
+    function listo() { aviso("Copiado. Pégalo en Tutor Feed, un bloque por mensaje."); var o = btn.textContent; btn.textContent = "Copiado"; setTimeout(function () { btn.textContent = o; }, 1800); }
+    function respaldo() {
+      try { var t = document.createElement("textarea"); t.value = texto; t.setAttribute("readonly", ""); t.style.position = "fixed"; t.style.opacity = "0"; document.body.appendChild(t); t.select(); var ok = document.execCommand("copy"); document.body.removeChild(t); if (ok) { listo(); return; } } catch (e) {}
+      seleccionar(el); aviso("No se pudo copiar automáticamente. El texto quedó seleccionado: cópialo con Ctrl+C.");
+    }
+    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(texto).then(listo, respaldo); } else { respaldo(); }
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button.copiar") : null;
+    if (!b) return;
+    if (b.hasAttribute("data-todo")) {
+      var pres = Array.prototype.slice.call(document.querySelectorAll(".skill pre"));
+      copiar(pres.map(function (p) { return p.textContent; }).join("\\n\\n"), document.querySelector(".skill"), b);
+    } else {
+      var p = b.closest(".bloque").querySelector("pre");
+      copiar(p.textContent, p, b);
+    }
+  });
+})();
+</script>
 </body>
 </html>`;
 }
@@ -1104,6 +1160,7 @@ function generarResumen() {
     item.innerHTML = `<span class="chain-year">${escaparHTML(h.anio)}</span><strong>${escaparHTML(h.titulo)}</strong><span>${escaparHTML(h.causa)}</span>`;
     cadena.appendChild(item);
   });
+  renderBloquesSkill(document.getElementById("resumen-escritas"), construirBloquesSkill(), "Aún no hay respuestas escritas guardadas.");
   guardarProgreso();
   // Los créditos de imagen ya están fijos en el HTML de la pantalla de créditos
   // (no dependen de haber llegado hasta aquí para existir).
@@ -1182,6 +1239,268 @@ function animarNota(el, valor) {
   };
   el.textContent = "0.0";
   requestAnimationFrame(paso);
+}
+
+// ============================================================
+// RESPUESTAS ESCRITAS — explicaciones con palabras propias
+// (se escapan al mostrarse y nunca entran en el código RD)
+// ============================================================
+function actualizarBotonInicio() {
+  const nombreOk = evaluarNombre(document.getElementById("input-nombre").value).valido;
+  document.getElementById("btn-iniciar").disabled = !(nombreOk && estado.grado);
+}
+
+function contarPalabras(texto) {
+  return String(texto || "").trim().split(/\s+/).filter((p) => /[A-Za-zÀ-ÖØ-öø-ÿ0-9]/.test(p)).length;
+}
+
+function explicacionValida(parte) {
+  const texto = parte === "hito" ? estado.explicaciones.hito[estado.hitoActual] : estado.explicaciones[parte];
+  return contarPalabras(texto) >= MIN_PALABRAS[parte];
+}
+
+function actualizarContador(parte) {
+  const ta = document.getElementById(`texto-${parte}`);
+  const contador = document.getElementById(`contador-${parte}`);
+  const n = contarPalabras(ta.value);
+  const minimo = MIN_PALABRAS[parte];
+  contador.textContent = n >= minimo ? `${n} palabras · listo para guardar` : `${n} / ${minimo} palabras`;
+  contador.classList.toggle("is-ok", n >= minimo);
+}
+
+function prepararExplicacion(parte, visible, texto, animar) {
+  const seccion = document.getElementById(`explica-${parte}`);
+  const ta = document.getElementById(`texto-${parte}`);
+  const estadoEl = document.getElementById(`estado-${parte}`);
+  seccion.hidden = !visible;
+  ta.value = texto || "";
+  estadoEl.className = "explica-estado";
+  estadoEl.textContent = texto ? "Explicación guardada. Puedes editarla y volver a guardarla." : "";
+  if (texto) estadoEl.classList.add("is-ok");
+  actualizarContador(parte);
+  if (visible && animar) {
+    seccion.classList.remove("explica--entra");
+    void seccion.offsetWidth;
+    seccion.classList.add("explica--entra");
+  }
+}
+
+function guardarExplicacion(parte) {
+  const ta = document.getElementById(`texto-${parte}`);
+  const estadoEl = document.getElementById(`estado-${parte}`);
+  const texto = ta.value.trim().slice(0, 2000);
+  const n = contarPalabras(texto);
+  const minimo = MIN_PALABRAS[parte];
+  estadoEl.className = "explica-estado";
+  if (n < minimo) {
+    const faltan = minimo - n;
+    estadoEl.textContent = `Te ${faltan === 1 ? "falta 1 palabra" : `faltan ${faltan} palabras`}. Escribe al menos ${minimo}: di qué pasó primero (la causa) y qué cambió después (el efecto).`;
+    estadoEl.classList.add("is-error");
+    ta.focus();
+    return;
+  }
+  let mensaje = "Explicación guardada.";
+  if (parte === "hito") {
+    const numero = estado.hitoActual;
+    estado.explicaciones.hito[numero] = texto;
+    if (!estado.explorados.has(numero)) {
+      estado.explorados.add(numero);
+      marcarTarjetaExplorada(numero);
+      actualizarMapa();
+      mensaje = "Explicación guardada. El hito quedó explorado.";
+    }
+  } else if (parte === "actividad") {
+    estado.explicaciones.actividad = texto;
+    document.getElementById("btn-resumen").disabled = !estado.resultadoFinal.length;
+    mensaje = "Explicación guardada. Ya puedes diseñar tu recomendación.";
+  } else if (parte === "propuesta") {
+    estado.explicaciones.propuesta = texto;
+    document.getElementById("btn-ir-cierre").disabled = false;
+    mensaje = "Explicación guardada. Ya puedes ver el cierre.";
+  }
+  estadoEl.textContent = mensaje;
+  estadoEl.classList.add("is-ok");
+  guardarProgreso();
+}
+
+function inicializarExplicaciones() {
+  document.querySelectorAll(".explica-texto[data-parte]").forEach((ta) => {
+    ta.addEventListener("input", () => actualizarContador(ta.dataset.parte));
+  });
+  document.querySelectorAll('input[name="grado"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      if (radio.checked) estado.grado = radio.value;
+      actualizarBotonInicio();
+      guardarProgreso();
+    });
+  });
+}
+
+// ------------------------------------------------------------
+// Bloques para la skill docente Tutor Feed (una línea por campo)
+// ------------------------------------------------------------
+function formatearBloqueSkill(parte, pregunta, respuesta) {
+  const limpia = String(respuesta).replace(/\s+/g, " ").trim();
+  return {
+    titulo: parte,
+    texto: [
+      `Hito o parte: ${parte}`,
+      `Pregunta: ${pregunta}`,
+      `Respuesta del estudiante: "${limpia}"`,
+      "Criterios: por defecto",
+      `Grado: ${estado.grado || "(sin grado)"}`,
+    ].join("\n"),
+  };
+}
+
+function construirBloquesSkill() {
+  const bloques = [];
+  Object.keys(HITOS).forEach((n) => {
+    const texto = estado.explicaciones.hito[n];
+    if (texto) bloques.push(formatearBloqueSkill(`Hito ${String(n).padStart(2, "0")} · ${HITOS[n].titulo} (${HITOS[n].anio})`, CONSIGNAS.hito, texto));
+  });
+  if (estado.explicaciones.actividad) bloques.push(formatearBloqueSkill("Actividad de relaciones", CONSIGNAS.actividad, estado.explicaciones.actividad));
+  if (estado.explicaciones.propuesta && estado.propuestaValidada) bloques.push(formatearBloqueSkill("Recomendación final", CONSIGNAS.propuesta, estado.explicaciones.propuesta));
+  return bloques;
+}
+
+function renderBloquesSkill(lista, bloques, textoVacio) {
+  lista.innerHTML = "";
+  if (!bloques.length) {
+    const li = document.createElement("li");
+    li.className = "bloques-vacio";
+    li.textContent = textoVacio;
+    lista.appendChild(li);
+    return;
+  }
+  bloques.forEach((b, i) => {
+    const li = document.createElement("li");
+    li.style.setProperty("--i", i);
+    const art = document.createElement("article");
+    art.className = "bloque-skill";
+    const head = document.createElement("div");
+    head.className = "bloque-skill-head";
+    const titulo = document.createElement("strong");
+    titulo.textContent = b.titulo;
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = "button button-secondary";
+    boton.dataset.action = "copiar-bloque";
+    boton.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg> Copiar para Tutor Feed';
+    boton.setAttribute("aria-label", `Copiar para Tutor Feed: ${b.titulo}`);
+    head.append(titulo, boton);
+    const pre = document.createElement("pre");
+    pre.className = "bloque-texto";
+    pre.textContent = b.texto;
+    art.append(head, pre);
+    li.appendChild(art);
+    lista.appendChild(li);
+  });
+}
+
+function seleccionarContenido(el) {
+  try {
+    const rango = document.createRange();
+    rango.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(rango);
+  } catch (e) { /* nada */ }
+}
+
+function copiarTexto(texto, elemento, boton) {
+  const listo = () => {
+    anunciar("Copiado. Pégalo en Tutor Feed, un bloque por mensaje.");
+    if (boton) {
+      if (!boton.dataset.original) boton.dataset.original = boton.innerHTML;
+      boton.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Copiado';
+      boton.classList.add("is-copiado");
+      window.setTimeout(() => { boton.innerHTML = boton.dataset.original; boton.classList.remove("is-copiado"); }, 1800);
+    }
+  };
+  const respaldo = () => {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = texto;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      if (ok) { listo(); return; }
+    } catch (e) { /* sigue al plan B */ }
+    seleccionarContenido(elemento);
+    anunciar("No se pudo copiar automáticamente. El texto quedó seleccionado: cópialo con Ctrl+C.");
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(texto).then(listo, respaldo);
+  else respaldo();
+}
+
+// ------------------------------------------------------------
+// Guía docente y separador de bloques pegados
+// ------------------------------------------------------------
+function montarGuias() {
+  const plantilla = document.getElementById("tpl-guia");
+  ["guia-publica", "guia-dashboard"].forEach((id) => {
+    const destino = document.getElementById(id);
+    if (destino && plantilla) destino.appendChild(plantilla.content.cloneNode(true));
+  });
+}
+
+function parsearBloquesSkill(texto) {
+  const campos = [
+    ["parte", /^hito\s+o\s+parte\s*:\s*/i],
+    ["pregunta", /^pregunta\s*:\s*/i],
+    ["respuesta", /^respuesta\s+del\s+estudiante\s*:\s*/i],
+    ["criterios", /^criterios\s*:\s*/i],
+    ["grado", /^grado\s*:\s*/i],
+  ];
+  const lineas = String(texto || "").replace(/\r\n?/g, "\n").split("\n")
+    .map((l) => l.replace(/^[\s>*•·\-–—]+/, "").replace(/\s+$/, ""));
+  const encontrados = [];
+  let actual = null;
+  let campo = null;
+  lineas.forEach((linea) => {
+    const coincide = campos.find(([, re]) => re.test(linea));
+    if (coincide) {
+      if (coincide[0] === "parte") { actual = {}; encontrados.push(actual); }
+      if (!actual) return;
+      campo = coincide[0];
+      actual[campo] = linea.replace(coincide[1], "").trim();
+    } else if (!linea.trim()) {
+      campo = null;
+    } else if (actual && (campo === "respuesta" || campo === "pregunta")) {
+      actual[campo] += ` ${linea.trim()}`;
+    }
+  });
+  return encontrados
+    .filter((b) => b.parte && b.respuesta)
+    .map((b) => {
+      const resp = `"${b.respuesta.trim().replace(/^["“]|["”]$/g, "")}"`;
+      return {
+        titulo: b.parte,
+        texto: [
+          `Hito o parte: ${b.parte}`,
+          `Pregunta: ${b.pregunta || ""}`,
+          `Respuesta del estudiante: ${resp}`,
+          `Criterios: ${b.criterios || "por defecto"}`,
+          `Grado: ${b.grado || ""}`,
+        ].join("\n"),
+      };
+    });
+}
+
+function separarBloquesPegados() {
+  const bloques = parsearBloquesSkill(document.getElementById("input-pegar").value);
+  const estadoEl = document.getElementById("pegar-estado");
+  renderBloquesSkill(document.getElementById("pegar-bloques"), bloques, "No encontré bloques. Revisa que el texto incluya líneas como \"Hito o parte:\" y \"Respuesta del estudiante:\".");
+  estadoEl.className = "explica-estado";
+  estadoEl.textContent = bloques.length
+    ? `Encontré ${bloques.length} bloque${bloques.length === 1 ? "" : "s"}. Copia uno a la vez y pégalo en Tutor Feed.`
+    : "No encontré bloques en el texto pegado.";
+  estadoEl.classList.add(bloques.length ? "is-ok" : "is-error");
 }
 
 // ============================================================
@@ -1278,6 +1597,25 @@ document.addEventListener("click", (e) => {
     case "exportar-docente":
       exportarCSVDocente();
       break;
+    case "go-guia":
+      mostrarPantalla("screen-guia", "Guía docente para retroalimentar con IA.");
+      break;
+    case "guardar-explicacion":
+      guardarExplicacion(btn.dataset.parte);
+      break;
+    case "copiar-bloque": {
+      const pre = btn.closest(".bloque-skill").querySelector(".bloque-texto");
+      copiarTexto(pre.textContent, pre, btn);
+      break;
+    }
+    case "copiar-todo": {
+      const bloques = construirBloquesSkill();
+      copiarTexto(bloques.map((b) => b.texto).join("\n\n"), document.getElementById("resumen-escritas"), btn);
+      break;
+    }
+    case "separar-bloques":
+      separarBloquesPegados();
+      break;
     case "vaciar-docente":
       vaciarRegistrosDocente();
       break;
@@ -1313,6 +1651,8 @@ function reiniciarRecorrido(limpiarNombre) {
   estado.erroresArgumentacion = 0;
   estado.propuestaValidada = null;
   estado.propuestaOmitida = false;
+  estado.explicaciones = { hito: {}, actividad: "", propuesta: "" };
+  ["hito", "actividad", "propuesta"].forEach((parte) => prepararExplicacion(parte, false, ""));
   estado.parIndex = elegirParAleatorio(estado.parIndex);
   document.getElementById("match-board").innerHTML = "";
   propuestaPoblada = false;
@@ -1350,6 +1690,8 @@ function reiniciarRecorrido(limpiarNombre) {
     const chip = document.getElementById("chip-estudiante");
     chip.textContent = "";
     chip.hidden = true;
+    estado.grado = "";
+    document.querySelectorAll('input[name="grado"]').forEach((r) => { r.checked = false; });
     document.getElementById("btn-iniciar").disabled = true;
   }
 
@@ -1578,7 +1920,7 @@ var restaurandoProgreso = false;
 
 function restaurarProgreso() {
   const d = leerProgreso();
-  if (!d || d.v !== 1) return;
+  if (!d || d.v !== 2) return;
   restaurandoProgreso = true;
   try {
     const nombre = typeof d.nombre === "string" ? d.nombre : "";
@@ -1587,6 +1929,17 @@ function restaurarProgreso() {
       aplicarNombre(nombre);
     }
     const obj = (x) => (x && typeof x === "object" && !Array.isArray(x) ? x : {});
+    if (d.grado === "10.º" || d.grado === "11.º") {
+      estado.grado = d.grado;
+      const radio = document.querySelector(`input[name="grado"][value="${d.grado}"]`);
+      if (radio) radio.checked = true;
+    }
+    const ex = obj(d.explicaciones);
+    const txt = (x) => (typeof x === "string" ? x.slice(0, 2000) : "");
+    Object.entries(obj(ex.hito)).forEach(([k, v]) => { if (HITOS[k]) estado.explicaciones.hito[k] = txt(v); });
+    estado.explicaciones.actividad = txt(ex.actividad);
+    estado.explicaciones.propuesta = txt(ex.propuesta);
+    actualizarBotonInicio();
     const num = (x) => (Number.isFinite(Number(x)) && Number(x) >= 0 ? Math.floor(Number(x)) : 0);
     if (Number.isInteger(d.parIndex) && TRANSFORMACIONES_POOL[d.parIndex]) estado.parIndex = d.parIndex;
     (Array.isArray(d.explorados) ? d.explorados : []).map(Number).filter((n) => HITOS[n]).forEach((n) => {
@@ -1623,7 +1976,10 @@ function restaurarProgreso() {
         if (sel && HITOS[v]) sel.value = String(v);
       });
       actualizarBotonComprobar();
-      if (estado.resultadoFinal.length) document.getElementById("btn-resumen").disabled = false;
+      if (estado.resultadoFinal.length) {
+        prepararExplicacion("actividad", true, estado.explicaciones.actividad);
+        document.getElementById("btn-resumen").disabled = !explicacionValida("actividad");
+      }
     }
 
     // Producto final ya validado: se reconstruye en su estado resuelto.
@@ -1637,7 +1993,7 @@ function restaurarProgreso() {
       if (document.querySelectorAll(".ranura.tiene-bloque").length === 3) validarPropuesta();
     }
 
-    if (nombre && evaluarNombre(nombre).valido) {
+    if (nombre && evaluarNombre(nombre).valido && estado.grado) {
       const puedeCierre = d.pantalla === "screen-cierre" && (estado.propuestaValidada || estado.propuestaOmitida);
       if (puedeCierre) {
         generarResumen();
@@ -1657,6 +2013,8 @@ function restaurarProgreso() {
 window.addEventListener("pagehide", guardarProgreso);
 
 renderTimeline();
+montarGuias();
+inicializarExplicaciones();
 inicializarAudio();
 actualizarMapa();
 restaurarProgreso();
