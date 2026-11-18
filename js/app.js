@@ -591,7 +591,7 @@ function devolverBloqueABanda(bloque) {
   const ranura = bloque.closest(".ranura");
   if (ranura) {
     ranura.classList.remove("tiene-bloque", "es-correcta", "es-incorrecta");
-    ranura.querySelector(".ranura-contenido").textContent = `Arrastra o toca un bloque ${ranura.dataset.tipo === "estrategia" ? "naranja" : ranura.dataset.tipo === "justificacion" ? "verde azulado" : "amarillo"}`;
+    ranura.querySelector(".ranura-contenido").textContent = `Arrastra o toca un bloque ${ranura.dataset.tipo === "estrategia" ? "rosa" : ranura.dataset.tipo === "justificacion" ? "azul" : "lila"}`;
     ranura.setAttribute("aria-label", `Ranura de ${ranura.dataset.tipo}, vacía`);
   }
   bloque.classList.remove("es-correcta", "es-incorrecta", "is-seleccionado");
@@ -927,7 +927,7 @@ function construirReporteHTML() {
 <title>Reporte de desempeño — ${escaparHTML(estado.nombreEstudiante || "Estudiante")}</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
 <style>
-  :root { --paper:#F5F2E8; --sheet:#FFFDF7; --band:#E6EFE0; --ink:#1A1D21; --ink-2:#4B535A; --rule:#CBCDBF; --red:#B0281F; --green:#2D6A3E; --green-bg:#DCEBDA;
+  :root { --paper:#EEF1FA; --sheet:#FBFCFF; --band:#DFE6F7; --ink:#1D2347; --ink-2:#454D78; --rule:#CAD1E8; --red:#99563F; --green:#2B6A57; --green-bg:#D7ECE5; --rose-gold:#C99A84; --on-dark:#EEF1FA; --on-dark-2:#D3D9F2; --grad-box:linear-gradient(170deg, #232B5E 0%, #2F3B7C 45%, #3E4F96 100%);
     --serif:"Newsreader", Georgia, "Times New Roman", serif; --sans:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif; --mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace; }
   * { box-sizing: border-box; }
   body { font-family: var(--sans); background: var(--paper); color: var(--ink); margin: 0; padding: 32px 16px; line-height: 1.55; }
@@ -935,14 +935,14 @@ function construirReporteHTML() {
   .reporte::before, .reporte::after { content: ""; position: absolute; top: 0; bottom: 0; width: 28px; background: radial-gradient(circle at 50% 50%, var(--paper) 5px, transparent 5.5px) 0 6px / 28px 24px repeat-y; border-right: 1px dashed var(--rule); }
   .reporte::before { left: 0; }
   .reporte::after { right: 0; border-right: 0; border-left: 1px dashed var(--rule); }
-  header { padding: 28px 0 20px; border-bottom: 2px solid var(--ink); }
-  .kicker { font-family: var(--mono); font-size: 0.75rem; color: var(--ink-2); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 14px; }
+  header { position: relative; z-index: 1; margin: 0 -16px; padding: 28px 20px 22px; background: var(--grad-box); color: var(--on-dark); border-bottom: 2px solid var(--rose-gold); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .kicker { font-family: var(--mono); font-size: 0.75rem; color: var(--on-dark-2); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 14px; }
   h1 { font-family: var(--serif); font-weight: 500; font-size: 2.1rem; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
-  h1 em { color: var(--red); }
-  .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; margin: 18px 0 0; border: 1px solid var(--rule); }
-  .meta div { padding: 10px 12px; border-right: 1px solid var(--rule); }
+  h1 em { color: var(--rose-gold); font-style: normal; }
+  .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; margin: 18px 0 0; border: 1px solid rgba(201,154,132,.6); }
+  .meta div { padding: 10px 12px; border-right: 1px solid rgba(201,154,132,.6); }
   .meta div:last-child { border-right: 0; }
-  .meta span { display: block; font-family: var(--mono); font-size: 0.68rem; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .meta span { display: block; font-family: var(--mono); font-size: 0.75rem; color: var(--on-dark-2); text-transform: uppercase; letter-spacing: 0.06em; }
   .meta strong { font-size: 0.98rem; overflow-wrap: anywhere; }
   .meta .codigo strong { font-family: var(--mono); letter-spacing: 0.04em; }
   section { padding: 20px 0; border-bottom: 1px solid var(--rule); }
@@ -951,7 +951,7 @@ function construirReporteHTML() {
   .nota-hero { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
   .nota-numero { font-family: var(--serif); font-size: 3.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
   .nota-numero small { font-family: var(--mono); font-size: 0.85rem; color: var(--ink-2); margin-left: 4px; }
-  .nota-nivel { display: inline-block; background: var(--ink); color: var(--sheet); font-weight: 700; padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; }
+  .nota-nivel { display: inline-block; background: var(--grad-box); border: 1px solid var(--rose-gold); color: var(--on-dark); font-weight: 700; padding: 4px 12px; border-radius: 4px; font-size: 0.85rem; }
   .nota-texto { flex: 1 1 260px; }
   .nota-texto p { margin: 8px 0 0; font-size: 0.94rem; }
   .barra-fila { margin: 12px 0; }
@@ -1294,7 +1294,7 @@ function reiniciarRecorrido(limpiarNombre) {
     r.querySelectorAll(".bloque").forEach((bl) => bl.remove());
     r.setAttribute("aria-label", `Ranura de ${r.dataset.tipo}, vacía`);
     r.classList.remove("tiene-bloque", "es-correcta", "es-incorrecta");
-    r.querySelector(".ranura-contenido").textContent = `Arrastra o toca un bloque ${r.dataset.tipo === "estrategia" ? "naranja" : r.dataset.tipo === "justificacion" ? "verde azulado" : "amarillo"}`;
+    r.querySelector(".ranura-contenido").textContent = `Arrastra o toca un bloque ${r.dataset.tipo === "estrategia" ? "rosa" : r.dataset.tipo === "justificacion" ? "azul" : "lila"}`;
   });
   document.getElementById("banda-bloques").innerHTML = "";
   document.getElementById("propuesta-resultado").innerHTML = "";
