@@ -35,18 +35,21 @@
 <header class="masthead">
   <div class="masthead-inner">
     <button class="brand" data-action="go-welcome" aria-label="Ir a la bienvenida">
-      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="7"/><circle cx="9" cy="9" r="2.4"/><circle cx="9" cy="16" r="2.4"/><circle cx="9" cy="23" r="2.4"/><path d="M15 9h10M15 16h7M15 23h10"/></svg>
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9"/><path d="M9 22l6-10 8 4"/><circle cx="9" cy="22" r="2.6"/><circle cx="15" cy="12" r="2.6"/><circle class="bm-hot" cx="23" cy="16" r="2.6"/></svg>
       <span class="brand-name">De ARPANET <em>al feed</em></span>
     </button>
-    <ol class="feed-rail" aria-hidden="true">
-      <li data-paso="1"><span class="rail-hole"></span><span class="rail-label">1969</span></li>
-      <li data-paso="2"><span class="rail-hole"></span><span class="rail-label">1989</span></li>
-      <li data-paso="3"><span class="rail-hole"></span><span class="rail-label">2000s</span></li>
-      <li data-paso="4"><span class="rail-hole"></span><span class="rail-label">Hoy</span></li>
-      <li data-paso="actividad"><span class="rail-hole"></span><span class="rail-label">Relacionar</span></li>
-      <li data-paso="propuesta"><span class="rail-hole"></span><span class="rail-label">Recomendar</span></li>
-      <li data-paso="cierre"><span class="rail-hole"></span><span class="rail-label">Cierre</span></li>
+    <div class="rail-wrap" aria-hidden="true">
+    <span class="rail-track"><span class="rail-fill"></span></span>
+    <ol class="feed-rail">
+      <li data-paso="1"><span class="rail-dot"></span><span class="rail-label">1969</span></li>
+      <li data-paso="2"><span class="rail-dot"></span><span class="rail-label">1989</span></li>
+      <li data-paso="3"><span class="rail-dot"></span><span class="rail-label">2000s</span></li>
+      <li data-paso="4"><span class="rail-dot"></span><span class="rail-label">Hoy</span></li>
+      <li data-paso="actividad"><span class="rail-dot"></span><span class="rail-label">Relacionar</span></li>
+      <li data-paso="propuesta"><span class="rail-dot"></span><span class="rail-label">Recomendar</span></li>
+      <li data-paso="cierre"><span class="rail-dot"></span><span class="rail-label">Cierre</span></li>
     </ol>
+    </div>
     <div class="masthead-meta">
       <span id="chip-estudiante" class="chip-estudiante" hidden></span>
       <span class="masthead-code">RED-1011-N-25</span>
@@ -88,20 +91,29 @@
         <button class="docente-link" data-action="go-docente"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Acceso docente</button>
       </div>
 
-      <div class="printout" role="img" aria-label="Ruta visual de cuatro hitos conectados: ARPANET, la Web, internet móvil y plataformas sociales, dentro de un mismo sistema que evoluciona de 1969 a hoy">
-        <div class="printout-paper">
-          <div class="printout-head">
+      <div class="red-art" role="img" aria-label="Ruta visual de cuatro hitos conectados: ARPANET, la Web, internet móvil y plataformas sociales, dentro de un mismo sistema que evoluciona de 1969 a hoy">
+        <div class="red-art-card">
+          <div class="red-art-head">
             <strong>De 1969 a hoy</strong>
             <span>una red que se vuelve cotidiana</span>
           </div>
-          <ol class="printout-lines">
-            <li style="--i:0"><span class="pl-year">1969</span><span class="pl-node"></span><span class="pl-name">ARPANET</span><span class="pl-note">red sin centro</span></li>
-            <li style="--i:1"><span class="pl-year">1989</span><span class="pl-node"></span><span class="pl-name">La Web</span><span class="pl-note">navegar con enlaces</span></li>
-            <li style="--i:2"><span class="pl-year">2000s</span><span class="pl-node"></span><span class="pl-name">Móvil</span><span class="pl-note">internet en el bolsillo</span></li>
-            <li style="--i:3"><span class="pl-year">Hoy</span><span class="pl-node"></span><span class="pl-name">El feed</span><span class="pl-note">publicar y compartir</span></li>
-          </ol>
+          <svg class="red-svg" viewBox="0 0 440 360" aria-hidden="true" focusable="false">
+            <g class="mesh">
+              <path d="M40 200L110 110M110 110L220 120M220 120L250 50M250 50L380 80M40 200L70 300M70 300L200 290M200 290L330 300M330 300L400 240M400 240L350 190M110 110L150 190M220 120L270 230M350 190L380 80M200 290L150 190M330 300L270 230"/>
+            </g>
+            <g class="mesh-dots">
+              <circle cx="40" cy="200" r="3"/><circle cx="110" cy="110" r="3"/><circle cx="220" cy="120" r="3"/><circle cx="250" cy="50" r="3"/><circle cx="200" cy="290" r="3"/><circle cx="330" cy="300" r="3"/><circle cx="400" cy="240" r="3"/><circle cx="350" cy="190" r="3"/>
+            </g>
+            <path class="route" pathLength="100" d="M70 300C100 250 120 215 150 190S240 250 270 230S340 120 380 80"/>
+            <path class="packet" pathLength="100" d="M70 300C100 250 120 215 150 190S240 250 270 230S340 120 380 80"/>
+            <path class="packet packet--2" pathLength="100" d="M70 300C100 250 120 215 150 190S240 250 270 230S340 120 380 80"/>
+            <g class="hub" style="--i:0"><circle class="hub-pulse" cx="70" cy="300" r="9"/><circle class="hub-dot" cx="70" cy="300" r="7"/><text x="88" y="296" class="hub-year">1969</text><text x="88" y="316" class="hub-name">ARPANET</text></g>
+            <g class="hub" style="--i:1"><circle class="hub-pulse" cx="150" cy="190" r="9"/><circle class="hub-dot" cx="150" cy="190" r="7"/><text x="166" y="184" class="hub-year">1989</text><text x="166" y="204" class="hub-name">La Web</text></g>
+            <g class="hub" style="--i:2"><circle class="hub-pulse" cx="270" cy="230" r="9"/><circle class="hub-dot" cx="270" cy="230" r="7"/><text x="286" y="248" class="hub-year">2000s</text><text x="286" y="268" class="hub-name">Móvil</text></g>
+            <g class="hub hub--hoy" style="--i:3"><circle class="hub-pulse" cx="380" cy="80" r="11"/><circle class="hub-dot" cx="380" cy="80" r="9"/><text x="372" y="124" class="hub-year" text-anchor="end">Hoy</text><text x="372" y="144" class="hub-name" text-anchor="end">El feed</text></g>
+          </svg>
         </div>
-        <div class="printout-post">
+        <div class="feed-post">
           <span class="post-avatar"></span>
           <span class="post-lines"><i></i><i></i></span>
           <span class="post-ask">¿Lo compartes?</span>

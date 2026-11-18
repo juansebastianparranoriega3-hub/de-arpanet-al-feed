@@ -85,14 +85,14 @@ También se puede abrir `index.html` directamente desde el computador.
 └── assets/
     ├── audio/            hito-1.mp3 … hito-4.mp3 (narraciones)
     ├── img/              hito-1.jpg … hito-4.jpg
-    └── fonts/            Newsreader, Atkinson Hyperlegible e IBM Plex Mono (woff2)
+    └── fonts/            Fraunces, Atkinson Hyperlegible e IBM Plex Mono (solo para los códigos)
 ```
 
 Para editar textos pedagógicos, preguntas o pistas, modifica `js/data.js`.
 
 ## Diseño y accesibilidad
 
-El diseño toma como hilo el papel continuo de las impresoras de computador (perforaciones laterales y bandas verdes), que en la bienvenida se imprime línea por línea y termina convertido en una publicación del feed. Incluye transcripciones completas, foco visible, navegación por teclado, mensajes para lector de pantalla, estados que no dependen solo del color y respeto por la preferencia de movimiento reducido.
+La paleta toma los colores de una caja de perfume: degradado índigo → periwinkle → azul hielo, filo oro rosa y cobre, y texto navy o blanco. El hilo visual es una red de nodos: en la bienvenida, la ruta de 1969 a hoy se dibuja y unos paquetes de luz viajan por ella hasta llegar al feed. Las animaciones (entradas escalonadas, riel de progreso, check al explorar un hito, brillo en la respuesta correcta, encaje de bloques y nota que cuenta hasta su valor) usan solo `transform`, `opacity` y `stroke-dashoffset`, y se reducen a fundidos breves con `prefers-reduced-motion`. Incluye transcripciones completas, foco visible, navegación por teclado, mensajes para lector de pantalla y estados que no dependen solo del color.
 
 ## Créditos
 
@@ -107,6 +107,6 @@ El diseño toma como hilo el papel continuo de las impresoras de computador (per
 - "Smartphone Use.jpg", de Wikimedia Commons, en dominio público (CC0).
 - "ISPMESM,AurangabadWksp5.jpg" (2017), de la categoría Marathi Wikipedia Workshops in Maharashtra en Wikimedia Commons, con licencia CC BY-SA 4.0.
 
-**Tipografías:** Newsreader, Atkinson Hyperlegible e IBM Plex Mono, de Google Fonts, con licencia SIL Open Font License 1.1.
+**Tipografías:** Fraunces, Atkinson Hyperlegible e IBM Plex Mono, de Google Fonts, con licencia SIL Open Font License 1.1.
 
 **Licencia del recurso:** Creative Commons BY-SA.
