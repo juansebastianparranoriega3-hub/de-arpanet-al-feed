@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De ARPANET al feed · RED-1011-N-25</title>
+<meta name="description" content="Recurso Educativo Digital para 10.º y 11.º: cómo cuatro giros tecnológicos, de ARPANET al feed, cambiaron la forma en que circula la información. Reto RED-1011-N-25.">
+<meta name="theme-color" content="#F5F2E8">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-screen="screen-bienvenida">
+
+<!-- Iconos dibujados (un solo trazo de 1.75px) -->
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" class="fill"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-replay" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="9" r="2.2"/><circle cx="8" cy="18" r="2.2"/><path d="M8 6.8l7.9 1.6M16.6 10.8l-7 5.6"/></symbol>
+  <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4.5 15v-3a7.5 7.5 0 0 1 15 0v3"/><rect x="3.5" y="14" width="4" height="6" rx="1.5"/><rect x="16.5" y="14" width="4" height="6" rx="1.5"/></symbol>
+  <symbol id="i-question" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.6"/><path d="M12 16.9v.1"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 4.5l2.2 4.7 5.1.6-3.8 3.5 1 5.1-4.5-2.6-4.5 2.6 1-5.1-3.8-3.5 5.1-.6z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <button class="brand" data-action="go-welcome" aria-label="Ir a la bienvenida">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="7"/><circle cx="9" cy="9" r="2.4"/><circle cx="9" cy="16" r="2.4"/><circle cx="9" cy="23" r="2.4"/><path d="M15 9h10M15 16h7M15 23h10"/></svg>
+      <span class="brand-name">De ARPANET <em>al feed</em></span>
+    </button>
+    <ol class="feed-rail" aria-hidden="true">
+      <li data-paso="1"><span class="rail-hole"></span><span class="rail-label">1969</span></li>
+      <li data-paso="2"><span class="rail-hole"></span><span class="rail-label">1989</span></li>
+      <li data-paso="3"><span class="rail-hole"></span><span class="rail-label">2000s</span></li>
+      <li data-paso="4"><span class="rail-hole"></span><span class="rail-label">Hoy</span></li>
+      <li data-paso="actividad"><span class="rail-hole"></span><span class="rail-label">Relacionar</span></li>
+      <li data-paso="propuesta"><span class="rail-hole"></span><span class="rail-label">Recomendar</span></li>
+      <li data-paso="cierre"><span class="rail-hole"></span><span class="rail-label">Cierre</span></li>
+    </ol>
+    <div class="masthead-meta">
+      <span id="chip-estudiante" class="chip-estudiante" hidden></span>
+      <span class="masthead-code">RED-1011-N-25</span>
+    </div>
+  </div>
+</header>
+
+<div id="anuncio" class="sr-only" role="status" aria-live="polite"></div>
+
+<main id="main" tabindex="-1">
+
+  <!-- 1. BIENVENIDA -->
+  <section id="screen-bienvenida" class="screen" aria-labelledby="titulo-bienvenida">
+    <div class="page page-welcome">
+      <p class="doc-header"><span>Historia de la circulación</span><span>Tecnología e Informática · Reto RED-1011-N-25</span></p>
+      <div class="welcome-copy">
+        <h1 class="display display-hero" id="titulo-bienvenida" tabindex="-1">De ARPANET <em>al feed</em></h1>
+        <p class="intro">Sigue cuatro giros tecnológicos y descubre cómo cada uno cambió la forma en que la información viaja, se conecta y llega a otras personas.</p>
+
+        <div class="field nombre-campo">
+          <label for="input-nombre">Escribe tu nombre completo para empezar</label>
+          <input type="text" id="input-nombre" autocomplete="name" placeholder="Nombre y apellido" aria-describedby="nombre-ayuda nombre-nota">
+          <span class="field-help" id="nombre-nota">Tu profesora lo verá en el código y en el reporte final.</span>
+          <span class="field-error" id="nombre-ayuda" hidden>Escribe tu nombre para que tu profesora pueda identificarte en el reporte.</span>
+        </div>
+
+        <div class="actions">
+          <button class="button button-primary" data-action="start" id="btn-iniciar" disabled>Abrir la ruta <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <button class="button button-quiet" data-action="toggle-how" aria-expanded="false" aria-controls="how-it-works">¿Cómo funciona?</button>
+          <button class="button button-quiet" data-action="toggle-rubrica" aria-expanded="false" aria-controls="rubrica-panel">Ver la rúbrica</button>
+        </div>
+
+        <div class="note how-it-works" id="how-it-works" hidden>
+          <strong>Explora, escucha, relaciona.</strong>
+          <span>Escucha cada hito, responde su pregunta y luego une cada cambio con la transformación social que causó.</span>
+        </div>
+
+        <p class="welcome-footnote">Para estudiantes de 10.º y 11.º · Una experiencia breve para pensar antes de compartir.</p>
+        <button class="docente-link" data-action="go-docente"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Acceso docente</button>
+      </div>
+
+      <div class="printout" role="img" aria-label="Ruta visual de cuatro hitos conectados: ARPANET, la Web, internet móvil y plataformas sociales, dentro de un mismo sistema que evoluciona de 1969 a hoy">
+        <div class="printout-paper">
+          <div class="printout-head">
+            <strong>De 1969 a hoy</strong>
+            <span>una red que se vuelve cotidiana</span>
+          </div>
+          <ol class="printout-lines">
+            <li style="--i:0"><span class="pl-year">1969</span><span class="pl-node"></span><span class="pl-name">ARPANET</span><span class="pl-note">red sin centro</span></li>
+            <li style="--i:1"><span class="pl-year">1989</span><span class="pl-node"></span><span class="pl-name">La Web</span><span class="pl-note">navegar con enlaces</span></li>
+            <li style="--i:2"><span class="pl-year">2000s</span><span class="pl-node"></span><span class="pl-name">Móvil</span><span class="pl-note">internet en el bolsillo</span></li>
+            <li style="--i:3"><span class="pl-year">Hoy</span><span class="pl-node"></span><span class="pl-name">El feed</span><span class="pl-note">publicar y compartir</span></li>
+          </ol>
+        </div>
+        <div class="printout-post">
+          <span class="post-avatar"></span>
+          <span class="post-lines"><i></i><i></i></span>
+          <span class="post-ask">¿Lo compartes?</span>
+        </div>
+      </div>
+
+      <div class="rubrica-panel" id="rubrica-panel" hidden>
+        <h2 class="panel-title">Así se evalúa este recorrido</h2>
+        <table class="data-table rubrica-tabla">
+          <thead>
+            <tr><th scope="col">Criterio</th><th scope="col">Inicial</th><th scope="col">En proceso</th><th scope="col">Logrado</th><th scope="col">Sobresaliente</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Comprensión</th><td data-nivel="Inicial">Necesita las dos pistas en casi todas las preguntas</td><td data-nivel="En proceso">Acierta con una pista en varias preguntas</td><td data-nivel="Logrado">Acierta la mayoría sin pistas</td><td data-nivel="Sobresaliente">Acierta las 4 preguntas sin usar pistas</td></tr>
+            <tr><th scope="row">Análisis</th><td data-nivel="Inicial">No logra relacionar hitos con transformaciones</td><td data-nivel="En proceso">Relaciona con varios intentos</td><td data-nivel="Logrado">Relaciona las dos transformaciones correctamente</td><td data-nivel="Sobresaliente">Las relaciona al primer intento</td></tr>
+            <tr><th scope="row">Aplicación</th><td data-nivel="Inicial">No completa la recomendación</td><td data-nivel="En proceso">Elige una estrategia pero sin justificarla bien</td><td data-nivel="Logrado">Elige una estrategia y la justifica correctamente</td><td data-nivel="Sobresaliente">La justifica de forma clara, al primer intento</td></tr>
+            <tr><th scope="row">Argumentación</th><td data-nivel="Inicial">No conecta evidencia con su postura</td><td data-nivel="En proceso">Conecta evidencia parcialmente</td><td data-nivel="Logrado">Usa evidencia real de los hitos para defender su postura</td><td data-nivel="Sobresaliente">Argumenta con precisión y sin contradicciones</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. MAPA -->
+  <section id="screen-mapa" class="screen" aria-labelledby="titulo-mapa" hidden>
+    <div class="page">
+      <div class="screen-top">
+        <button class="back-link" data-action="go-welcome"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Bienvenida</button>
+        <span class="step-label">Mapa de la ruta</span>
+      </div>
+      <h1 class="display" id="titulo-mapa" tabindex="-1">La ruta de los cambios</h1>
+      <p class="lead">Elige cualquier hito, en el orden que prefieras. Escucha o lee su explicación, responde la pregunta y vuelve aquí cuando quieras. El hito 01 trae un ejemplo ya resuelto, así que ábrelo primero si quieres ver cómo se conecta una causa con un efecto antes de razonar los demás.</p>
+
+      <div class="map-layout">
+        <ul class="timeline" id="timeline" aria-label="Hitos de la ruta"></ul>
+
+        <aside class="map-aside" aria-label="Tu avance">
+          <div class="progress-counter">
+            <span class="progress-num" id="progreso-texto">00 / 04 explorados</span>
+            <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progreso-barra" style="width:0%"></div></div>
+          </div>
+          <div class="map-message" id="mapa-mensaje">
+            <strong id="mapa-mensaje-titulo">Faltan 4 hitos por explorar.</strong>
+            <span>No hay un orden obligatorio, así que abre cualquier tarjeta y luego vuelve a elegir.</span>
+          </div>
+          <button class="button button-primary button-block" data-action="go-actividad" disabled>Ir a la actividad final <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <p class="aside-help" id="actividad-ayuda">Se abre al resolver los cuatro hitos.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. DETALLE DE HITO (plantilla reutilizada) -->
+  <section id="screen-hito" class="screen" aria-labelledby="titulo-hito" hidden>
+    <div class="page">
+      <div class="screen-top">
+        <button class="back-link" data-action="go-mapa"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver al mapa</button>
+        <span class="step-label" id="hito-paso">HITO 01 / 04</span>
+      </div>
+
+      <div class="hito-layout">
+        <header class="hito-head">
+          <p class="year-stamp"><span class="year-rule" aria-hidden="true"></span><strong id="hito-anio"></strong></p>
+          <h1 class="display detail-title" id="titulo-hito" tabindex="-1"></h1>
+          <p class="lead" id="hito-resumen"></p>
+        </header>
+
+        <div class="hito-side">
+          <figure class="hito-figure">
+            <div class="figure-frame"><img id="hito-imagen" src="assets/img/hito-1.jpg" alt="" width="800" height="600"></div>
+            <figcaption id="hito-credito"></figcaption>
+          </figure>
+
+          <div class="cause-box">
+            <p class="cause-label"><span>Causa</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg><span>efecto</span></p>
+            <p id="hito-causa"></p>
+          </div>
+
+          <div class="ejemplo-nota" id="hito-ejemplo-nota" hidden>
+            <p class="card-label"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg> Así se razona</p>
+            <p>Mira este ejemplo simple. La <strong>causa</strong> es que ARPANET no tenía un computador central, todos los nodos eran iguales. El <strong>efecto</strong> es que si uno fallaba, la red seguía funcionando igual. Esa es la fórmula, busca qué pasó primero (la causa) y qué cambió después por eso (el efecto). Úsala para los otros tres hitos.</p>
+          </div>
+        </div>
+
+        <div class="hito-body">
+          <section class="media-card" aria-labelledby="titulo-audio">
+            <h2 id="titulo-audio" class="h-icon"><svg class="icon" aria-hidden="true"><use href="#i-headphones"/></svg> Escucha la idea central</h2>
+            <audio id="hito-audio" preload="metadata"></audio>
+            <div class="audio-control">
+              <button class="audio-btn" data-action="play-audio" aria-pressed="false" aria-label="Reproducir o pausar la narración">
+                <svg class="icon icon-play" aria-hidden="true"><use href="#i-play"/></svg>
+                <svg class="icon icon-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+              </button>
+              <div class="audio-copy">
+                <strong id="audio-estado">Narración corta</strong>
+                <span id="audio-detalle">también puedes leer la transcripción</span>
+                <div class="audio-progress" aria-hidden="true"><i id="audio-progress-fill" style="width:0%"></i></div>
+              </div>
+              <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            </div>
+            <button class="text-button audio-replay" data-action="replay-audio" hidden><svg class="icon" aria-hidden="true"><use href="#i-replay"/></svg> Volver a escuchar desde el inicio</button>
+            <details class="transcript" open>
+              <summary>Transcripción</summary>
+              <p id="hito-transcripcion"></p>
+            </details>
+          </section>
+
+          <section class="question-card" aria-labelledby="hito-pregunta-texto">
+            <h2 id="hito-pregunta-texto"></h2>
+            <p class="answers-hint"><svg class="icon" aria-hidden="true"><use href="#i-question"/></svg> Comprueba tu idea: elige la opción que mejor explica la causa.</p>
+            <div class="answers" role="radiogroup" id="hito-opciones" aria-labelledby="hito-pregunta-texto"></div>
+            <div id="hito-feedback" class="feedback" aria-live="polite"></div>
+          </section>
+
+          <div class="screen-actions">
+            <button class="button button-secondary" data-action="go-mapa"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg> Elegir otro hito</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. ACTIVIDAD FINAL -->
+  <section id="screen-actividad" class="screen" aria-labelledby="titulo-actividad" hidden>
+    <div class="page page-narrow">
+      <div class="screen-top">
+        <button class="back-link" data-action="go-mapa"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver al mapa</button>
+        <span class="step-label">Actividad final <span class="step-sub">· Ahora conecta las piezas</span></span>
+      </div>
+      <h1 class="display" id="titulo-actividad" tabindex="-1">Construye tu explicación</h1>
+      <p class="lead">Relaciona cada transformación social con el hito que la causó. Puedes revisar los audios antes de responder.</p>
+      <section class="match-board" aria-label="Actividad de emparejamiento" id="match-board"></section>
+      <div class="screen-actions">
+        <button class="button button-primary" data-action="check-activity" id="btn-comprobar" disabled>Revisar mis relaciones <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4b. RETROALIMENTACIÓN -->
+  <section id="screen-retro" class="screen" aria-labelledby="titulo-retro" hidden>
+    <div class="page page-narrow">
+      <div class="screen-top">
+        <button class="back-link" data-action="go-actividad-directo"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver a la actividad</button>
+        <span class="step-label">Retroalimentación <span class="step-sub">· Revisemos tu explicación</span></span>
+      </div>
+      <h1 class="display" id="titulo-retro" tabindex="-1">Resultado</h1>
+      <div id="resultado-actividad" class="result-box" role="status"></div>
+      <div class="screen-actions">
+        <button class="button button-secondary" data-action="retry-activity" id="btn-reintentar"><svg class="icon" aria-hidden="true"><use href="#i-replay"/></svg> Reintentar</button>
+        <button class="button button-primary" data-action="go-propuesta" id="btn-resumen" disabled>Diseñar mi recomendación <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4c. PRODUCTO: DISEÑA TU RECOMENDACIÓN -->
+  <section id="screen-propuesta" class="screen" aria-labelledby="titulo-propuesta" hidden>
+    <div class="page">
+      <div class="screen-top">
+        <button class="back-link" data-action="go-actividad-directo"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver a la actividad</button>
+        <span class="step-label">Producto final <span class="step-sub">· Aplica lo que aprendiste</span></span>
+      </div>
+      <h1 class="display" id="titulo-propuesta" tabindex="-1">Diseña tu recomendación</h1>
+      <p class="lead">Un colegio de Montería está decidiendo cómo manejar el uso del celular durante la jornada escolar y te pide una recomendación. Construye tu argumento arrastrando (o marcando y tocando) un bloque de cada color hacia su ranura.</p>
+
+      <div class="constructor" role="group" aria-label="Constructor de argumento por bloques">
+        <div class="ranuras">
+          <div class="ranura ranura--estrategia" id="ranura-estrategia" data-tipo="estrategia" role="button" tabindex="0" aria-label="Ranura de estrategia, vacía">
+            <span class="ranura-etiqueta"><span class="swatch" aria-hidden="true"></span>Estrategia</span>
+            <span class="ranura-contenido">Arrastra o toca un bloque naranja</span>
+          </div>
+          <div class="ranura ranura--justificacion" id="ranura-justificacion" data-tipo="justificacion" role="button" tabindex="0" aria-label="Ranura de justificación, vacía">
+            <span class="ranura-etiqueta"><span class="swatch" aria-hidden="true"></span>Porque… (justificación)</span>
+            <span class="ranura-contenido">Arrastra o toca un bloque verde azulado</span>
+          </div>
+          <div class="ranura ranura--evidencia" id="ranura-evidencia" data-tipo="evidencia" role="button" tabindex="0" aria-label="Ranura de evidencia, vacía">
+            <span class="ranura-etiqueta"><span class="swatch" aria-hidden="true"></span>Evidencia que lo respalda</span>
+            <span class="ranura-contenido">Arrastra o toca un bloque amarillo</span>
+          </div>
+        </div>
+
+        <p class="help-text constructor-ayuda" id="constructor-ayuda">Toca un bloque de la banda para seleccionarlo y luego toca la ranura donde va, o arrástralo directamente si usas mouse.</p>
+
+        <div class="banda-wrap">
+          <p class="banda-titulo" aria-hidden="true">Bloques disponibles</p>
+          <div class="banda-bloques" id="banda-bloques" role="group" aria-label="Bloques disponibles, en orden mezclado"></div>
+        </div>
+      </div>
+
+      <div id="propuesta-resultado" class="feedback" role="status"></div>
+      <div class="screen-actions">
+        <button class="button button-primary" data-action="check-propuesta" id="btn-comprobar-propuesta" disabled>Comprobar mi recomendación <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></button>
+        <button class="button button-secondary" data-action="retry-propuesta" id="btn-reintentar-propuesta" hidden><svg class="icon" aria-hidden="true"><use href="#i-replay"/></svg> Deshacer bloques</button>
+        <button class="button button-primary" data-action="go-cierre" id="btn-ir-cierre" hidden>Ver resumen causal <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      </div>
+      <p class="help-text skip-help" id="saltar-ayuda">¿No logras armarla? <button class="text-button" data-action="skip-propuesta" id="btn-saltar-propuesta">Continuar sin completarla</button> — tu nivel de desempeño se verá afectado.</p>
+    </div>
+  </section>
+
+  <!-- 5. CIERRE / RESUMEN -->
+  <section id="screen-cierre" class="screen" aria-labelledby="titulo-cierre" hidden>
+    <div class="page">
+      <div class="screen-top">
+        <button class="back-link" data-action="go-mapa"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver al mapa</button>
+        <span class="step-label">Cierre <span class="step-sub">· Tu lectura de la ruta</span></span>
+      </div>
+      <h1 class="display display-close" id="titulo-cierre" tabindex="-1">La información aprendió a moverse.</h1>
+      <p class="lead" id="resumen-intro"></p>
+
+      <div class="cierre-layout">
+        <div class="cierre-main">
+          <section class="evidence-answer" aria-label="Tu explicación validada">
+            <h2><span class="h-pre">Tu evidencia de aprendizaje.</span> Las dos relaciones que construiste</h2>
+            <div id="resumen-evidencia"></div>
+          </section>
+          <section class="evidence-answer evidence-answer--propuesta" aria-label="Tu recomendación">
+            <h2><span class="h-pre">Tu producto final.</span> La recomendación que diseñaste</h2>
+            <div id="resumen-propuesta"></div>
+          </section>
+        </div>
+
+        <section class="desempeno-card" aria-label="Retroalimentación personalizada">
+          <p class="card-label" id="desempeno-nivel-tag">Tu nivel de desempeño</p>
+          <h2 id="desempeno-nivel">—</h2>
+          <div class="desempeno-nota"><strong id="desempeno-numero">—</strong><span>sobre 5.0 · escala de valoración de la Universidad</span></div>
+          <div id="desempeno-detalle" class="desempeno-detalle"></div>
+          <div class="codigo-card">
+            <h3>Código para tu docente</h3>
+            <p>Muéstrale o dile este código a tu profesora: ella lo registrará en su panel para llevar el control del curso.</p>
+            <div class="codigo-valor">
+              <span class="codigo-texto" id="codigo-desempeno">—</span>
+              <button class="button button-on-dark" data-action="copiar-codigo"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg> Copiar código</button>
+              <span class="codigo-copiado" id="codigo-copiado-msg" hidden>Copiado.</span>
+            </div>
+          </div>
+          <button class="button button-on-dark button-block" data-action="descargar-reporte"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Descargar reporte para tu profesora</button>
+        </section>
+      </div>
+
+      <section class="chain-section" aria-labelledby="titulo-cadena">
+        <h2 class="section-title" id="titulo-cadena">La cadena, de 1969 a hoy</h2>
+        <ol class="chain" aria-label="Cadena temporal" id="resumen-cadena"></ol>
+      </section>
+
+      <section class="evidence-grid">
+        <article class="evidence-card">
+          <h2><span class="h-pre">Idea central.</span> Cada salto amplió el circuito.</h2>
+          <p>La historia no es una escalera de inventos aislados. Es una cadena de causas y efectos.</p>
+          <ul>
+            <li>ARPANET hizo más resistente el transporte de datos.</li>
+            <li>La Web hizo navegable ese espacio de documentos.</li>
+            <li>El internet móvil quitó el límite del lugar fijo.</li>
+            <li>Las plataformas sociales sumaron participación y velocidad.</li>
+          </ul>
+        </article>
+        <article class="evidence-card evidence-card--feed">
+          <h2><span class="h-pre h-pre--accent">Para tu próximo feed.</span> Detente un segundo.</h2>
+          <p>Cuando recibas o compartas un mensaje, pregúntate quién lo creó, qué evidencia tiene, qué contexto falta y por qué te aparece a ti.</p>
+          <ul class="checklist" aria-hidden="true">
+            <li>¿Quién lo creó?</li>
+            <li>¿Qué evidencia tiene?</li>
+            <li>¿Qué contexto falta?</li>
+            <li>¿Por qué te aparece a ti?</li>
+          </ul>
+        </article>
+      </section>
+
+      <div class="screen-footer">
+        <span>Fin de la ruta · De ARPANET al feed</span>
+        <div class="result-actions">
+          <button class="button button-secondary" data-action="restart"><svg class="icon" aria-hidden="true"><use href="#i-replay"/></svg> Recorrer de nuevo</button>
+          <button class="button button-secondary" data-action="go-mapa"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg> Volver al mapa</button>
+          <button class="button button-primary" data-action="go-creditos">Créditos <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5b. PANEL DOCENTE (acceso restringido) -->
+  <section id="screen-docente" class="screen" aria-labelledby="titulo-docente" hidden>
+    <div class="page page-narrow">
+      <div class="screen-top">
+        <button class="back-link" data-action="go-welcome"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver a la bienvenida</button>
+        <span class="step-label">Panel docente</span>
+      </div>
+
+      <div id="docente-bloqueado" class="docente-gate">
+        <svg class="gate-icon" aria-hidden="true"><use href="#i-lock"/></svg>
+        <h1 class="display" id="titulo-docente" tabindex="-1">Panel de la docente</h1>
+        <p class="muted">Ingresa el código de acceso para ver el dashboard de desempeño del curso.</p>
+        <label for="input-clave-docente" class="sr-only">Código de acceso docente</label>
+        <input type="password" id="input-clave-docente" autocomplete="off" placeholder="Código de acceso" inputmode="text">
+        <div class="docente-error" id="docente-error" role="alert"></div>
+        <button class="button button-primary" data-action="entrar-docente">Entrar <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      </div>
+
+      <div id="docente-dashboard" hidden>
+        <h1 class="display" tabindex="-1">Dashboard de desempeño</h1>
+        <p class="lead">Registra aquí el código corto que cada estudiante te muestra al terminar la ruta. El nivel y la nota se calculan automáticamente a partir del código; el nombre lo escribes tú.</p>
+
+        <div class="docente-toolbar">
+          <span class="muted" id="docente-contador">0 estudiantes registrados</span>
+          <button class="button button-secondary" data-action="salir-docente">Cerrar sesión docente</button>
+        </div>
+
+        <form class="docente-form" id="form-docente" autocomplete="off">
+          <div class="docente-form-grid">
+            <div class="field">
+              <label for="input-nombre-docente">Nombre del estudiante</label>
+              <input type="text" id="input-nombre-docente" placeholder="Nombre y apellido">
+            </div>
+            <div class="field">
+              <label for="input-codigo-docente">Código mostrado por el estudiante</label>
+              <input type="text" id="input-codigo-docente" class="input-mono" placeholder="Ej: RD-7KQ-M4XP">
+            </div>
+            <button class="button button-primary" type="submit">Agregar</button>
+          </div>
+          <div class="field-error docente-form-error" id="docente-form-error" role="alert"></div>
+        </form>
+
+        <div class="table-wrap">
+          <table class="data-table docente-tabla" id="docente-tabla">
+            <thead>
+              <tr><th scope="col">Estudiante</th><th scope="col">Fecha</th><th scope="col">Nota</th><th scope="col">Nivel</th><th scope="col">Código</th><th scope="col"><span class="sr-only">Acciones</span></th></tr>
+            </thead>
+            <tbody id="docente-tabla-cuerpo"></tbody>
+          </table>
+          <p class="docente-vacio" id="docente-vacio">Aún no hay estudiantes registrados en este equipo.</p>
+        </div>
+
+        <div class="screen-actions">
+          <button class="button button-secondary" data-action="exportar-docente"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Exportar CSV</button>
+          <button class="button button-danger" data-action="vaciar-docente">Vaciar registros de este equipo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. CRÉDITOS -->
+  <section id="screen-creditos" class="screen" aria-labelledby="titulo-creditos" hidden>
+    <div class="page">
+      <div class="screen-top">
+        <button class="back-link" data-action="go-cierre"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver al resumen</button>
+        <span class="step-label">Créditos <span class="step-sub">· Una experiencia educativa abierta</span></span>
+      </div>
+      <div class="credits-layout">
+        <section>
+          <h1 class="display" id="titulo-creditos" tabindex="-1">Gracias por recorrerla.</h1>
+          <p class="lead">RED elaborado por Juan Sebastián Parra Noriega y Ana Vega, estudiantes de la Licenciatura en Informática y Medios Audiovisuales, Universidad de Córdoba (Montería), en el marco de la Actividad 1 del reto RED-1011-N-25.</p>
+          <dl class="credit-list">
+            <div class="credit-row"><dt>Contenido</dt><dd>Historia general de ARPANET, la World Wide Web, el internet móvil y las plataformas sociales, adaptada para uso educativo.</dd></div>
+            <div class="credit-row"><dt>Imágenes</dt><dd id="credito-imagenes">"A sketch of the ARPANET in December 1969", de Wikimedia Commons, en dominio público (Public Domain Mark 1.0). "First Web Server.jpg", foto de Coolcaesar, de Wikimedia Commons, con licencia CC BY-SA 3.0 Unported. "Smartphone Use.jpg", de Wikimedia Commons, en dominio público (CC0). "ISPMESM,AurangabadWksp5.jpg" (2017), de la categoría Marathi Wikipedia Workshops in Maharashtra en Wikimedia Commons, con licencia CC BY-SA 4.0.</dd></div>
+            <div class="credit-row"><dt>Accesibilidad</dt><dd>Transcripciones completas, foco visible, navegación por teclado, mensajes para lector de pantalla y estados que no dependen solo del color.</dd></div>
+            <div class="credit-row"><dt>Licencia</dt><dd>Publicado bajo Creative Commons BY-SA.</dd></div>
+          </dl>
+        </section>
+        <aside class="closing-card">
+          <h2>Una última pregunta</h2>
+          <p>Si el próximo mensaje que compartes pudiera viajar a millones de personas, ¿qué revisarías antes?</p>
+          <button class="button button-on-dark" data-action="restart-total"><svg class="icon" aria-hidden="true"><use href="#i-replay"/></svg> Recorrer de nuevo</button>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="colophon">
+  <p>De ARPANET al feed · Reto RED-1011-N-25 · Licenciatura en Informática y Medios Audiovisuales, Universidad de Córdoba, Montería</p>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
