@@ -40,6 +40,8 @@ Que el estudiante explique, como una cadena de causas y efectos, cómo cuatro hi
 | Aplicación | No completa la recomendación | Elige una estrategia pero sin justificarla bien | Elige una estrategia y la justifica correctamente | La justifica de forma clara, al primer intento |
 | Argumentación | No conecta evidencia con su postura | Conecta evidencia parcialmente | Usa evidencia real de los hitos para defender su postura | Argumenta con precisión y sin contradicciones |
 
+Las explicaciones escritas no cambian la nota automática: la docente las retroalimenta con la skill Tutor Feed y decide su valoración.
+
 La nota es el promedio de los cuatro criterios (escala 1.0 a 5.0). Se calcula con el **primer recorrido completo**: repetir la ruta sirve para practicar, pero no cambia la nota ni el código.
 
 ## Cómo usarlo
@@ -47,10 +49,11 @@ La nota es el promedio de los cuatro criterios (escala 1.0 a 5.0). Se calcula co
 ### Estudiante
 
 1. Abre el enlace del recurso.
-2. Escribe tu nombre y apellido y pulsa **Abrir la ruta**.
+2. Escribe tu nombre y apellido, elige tu grado y pulsa **Abrir la ruta**.
 3. Explora los cuatro hitos: escucha o lee, y responde la pregunta de cada uno.
 4. Haz la actividad final y diseña tu recomendación.
-5. Al terminar, copia el **código para tu docente** (formato `RD-XXX-XXXX`) o descarga el reporte y entrégaselo a tu profesora.
+5. Después de cada acierto, escribe tu explicación con tus palabras y guárdala.
+6. Al terminar, copia el **código para tu docente** (formato `RD-XXX-XXXX`) y descarga el reporte (incluye tus respuestas escritas) para entregárselo a tu profesora.
 
 Tu avance se guarda en el navegador del equipo que estés usando: si recargas o cierras la pestaña, puedes continuar donde ibas.
 
@@ -59,6 +62,36 @@ Tu avance se guarda en el navegador del equipo que estés usando: si recargas o 
 1. En la bienvenida, pulsa **Acceso docente** e ingresa el código de acceso. La docente ya lo tiene; no se publica aquí ni aparece en el código fuente (solo se guarda una huella o *hash*).
 2. Escribe el nombre del estudiante tal como lo registró y el código que te muestra. El panel calcula la nota y el nivel. El código solo es válido para ese nombre.
 3. Exporta los registros en CSV cuando quieras. Los registros se guardan solo en el navegador de ese equipo.
+
+## Cómo usar la skill Tutor Feed
+
+Además de las actividades de selección (que generan la nota automática y el código RD), el estudiante escribe seis explicaciones con sus palabras:
+
+- **Hito 01 a 04:** tras acertar la pregunta, responde "¿Cuál fue la causa de este hito y qué cambió en la forma de compartir información por eso?" (mínimo 15 palabras; el hito queda explorado al guardarla).
+- **Actividad de relaciones:** "Explica cómo se conectan las dos transformaciones con sus hitos" (mínimo 15 palabras).
+- **Recomendación final:** "Defiende tu recomendación con tus palabras, usando al menos un hito como evidencia" (mínimo 20 palabras). Si el estudiante elige "Continuar sin completarla", esta respuesta no aparece.
+
+En la bienvenida el estudiante también elige su grado (10.º u 11.º). Las respuestas escritas no cambian la nota automática ni el código RD.
+
+Al terminar, el cierre y el reporte descargable muestran cada respuesta como un **bloque para la skill**, con una línea por campo:
+
+```
+Hito o parte: Hito 02 · La World Wide Web (1989)
+Pregunta: ¿Cuál fue la causa de este hito y qué cambió en la forma de compartir información por eso?
+Respuesta del estudiante: "…"
+Criterios: por defecto
+Grado: 11.º
+```
+
+Pasos para la docente:
+
+1. Recibe el reporte descargado o el texto que el estudiante copió con **Copiar todo**. Si te lo pega en un mensaje, en el panel docente usa **Pegar respuestas del reporte**: el panel lo separa en bloques.
+2. Abre la Gem [Tutor Feed – Retroalimentación y pistas (De ARPANET al feed)](https://gemini.google.com/gem/5ed2eb3f2dbb).
+3. Pega **un bloque por mensaje** (botón **Copiar para Tutor Feed**).
+4. Revisa la tabla de diagnóstico, la retroalimentación, las pistas graduales, la pregunta de reflexión y la nota para el docente; decide qué pistas entregar.
+5. La skill **no califica**: la valoración de las respuestas escritas la decides tú.
+
+La misma guía está en el panel docente y, sin datos del curso, en el enlace "¿Eres docente? Mira cómo retroalimentar con IA" de la bienvenida.
 
 ## Publicar en GitHub Pages
 
