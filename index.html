@@ -7,7 +7,7 @@
 <meta name="description" content="Recurso Educativo Digital para 10.º y 11.º: cómo cuatro giros tecnológicos, de ARPANET al feed, cambiaron la forma en que circula la información. Reto RED-1011-N-25.">
 <meta name="theme-color" content="#EEF1FA">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="css/styles.css?v=20261118">
+<link rel="stylesheet" href="css/styles.css?v=20261125">
 </head>
 <body data-screen="screen-bienvenida">
 
@@ -28,12 +28,6 @@
   <symbol id="i-question" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.6"/><path d="M12 16.9v.1"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 4.5l2.2 4.7 5.1.6-3.8 3.5 1 5.1-4.5-2.6-4.5 2.6 1-5.1-3.8-3.5 5.1-.6z"/></symbol>
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
-  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10M19.5 4.5L11 13"/><path d="M17 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 4 18.5v-10A1.5 1.5 0 0 1 5.5 7H10"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4v13H7z"/><path d="M14 3.5v4h4M9.5 12h6M9.5 15.5h6"/></symbol>
-  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M18.5 16v4M16.5 18h4"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4.5 6.5A2 2 0 0 1 6.5 4.5h11a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2H11l-4.5 3.5V16h0a2 2 0 0 1-2-2z"/></symbol>
-  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>
-  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 4v16M7 20h10M5 8h14M5 8l-2.5 6a3 3 0 0 0 5 0zM19 8l-2.5 6a3 3 0 0 0 5 0z"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
 </svg>
 
@@ -78,18 +72,17 @@
 
         <div class="field nombre-campo">
           <label for="input-nombre">Escribe tu nombre completo para empezar</label>
-          <input type="text" id="input-nombre" autocomplete="name" placeholder="Nombre y apellido" aria-describedby="nombre-ayuda nombre-nota">
-          <span class="field-help" id="nombre-nota">Tu profesora lo verá en el código y en el reporte final.</span>
-          <span class="field-error" id="nombre-ayuda" hidden>Escribe tu nombre para que tu profesora pueda identificarte en el reporte.</span>
+          <input type="text" id="input-nombre" autocomplete="name" placeholder="Nombre y apellido" maxlength="80" aria-describedby="nombre-ayuda nombre-nota">
+          <span class="field-help" id="nombre-nota">Con este nombre le llega tu resultado a tu profesora.</span>
+          <span class="field-error" id="nombre-ayuda" hidden>Escribe tu nombre y apellido.</span>
         </div>
 
-        <fieldset class="grado-campo" aria-describedby="grado-ayuda">
+        <fieldset class="grado-campo">
           <legend>¿En qué grado estás?</legend>
           <div class="grado-opciones">
             <label class="grado-opcion"><input type="radio" name="grado" value="10.º" required><span>10.º</span></label>
             <label class="grado-opcion"><input type="radio" name="grado" value="11.º"><span>11.º</span></label>
           </div>
-          <span class="field-help" id="grado-ayuda">Obligatorio. Tu profesora lo usa para ajustar la retroalimentación de tus respuestas escritas.</span>
         </fieldset>
 
         <div class="actions">
@@ -100,14 +93,11 @@
 
         <div class="note how-it-works" id="how-it-works" hidden>
           <strong>Explora, escucha, relaciona.</strong>
-          <span>Escucha cada hito, responde su pregunta y luego une cada cambio con la transformación social que causó. Después de cada acierto escribirás con tus palabras la causa y el efecto: tu profesora retroalimentará esas explicaciones escritas con la ayuda de la IA Tutor Feed.</span>
+          <span>Escucha o lee cada hito, responde su pregunta y explica con tus palabras la causa y el efecto. Al final une cada cambio con la transformación social que causó y diseña una recomendación.</span>
         </div>
 
         <p class="welcome-footnote">Para estudiantes de 10.º y 11.º · Una experiencia breve para pensar antes de compartir.</p>
-        <div class="docente-links">
-          <button class="docente-link" data-action="go-docente"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Acceso docente</button>
-          <button class="docente-link" data-action="go-guia"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg> ¿Eres docente? Mira cómo retroalimentar con IA</button>
-        </div>
+        <button class="docente-link" data-action="go-docente"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Acceso docente</button>
       </div>
 
       <div class="red-art" role="img" aria-label="Ruta visual de cuatro hitos conectados: ARPANET, la Web, internet móvil y plataformas sociales, dentro de un mismo sistema que evoluciona de 1969 a hoy">
@@ -152,7 +142,7 @@
             <tr><th scope="row">Argumentación</th><td data-nivel="Inicial">No conecta evidencia con su postura</td><td data-nivel="En proceso">Conecta evidencia parcialmente</td><td data-nivel="Logrado">Usa evidencia real de los hitos para defender su postura</td><td data-nivel="Sobresaliente">Argumenta con precisión y sin contradicciones</td></tr>
           </tbody>
         </table>
-        <p class="rubrica-nota">Además, en cada hito, en la actividad de relaciones y en la recomendación escribes una explicación con tus palabras. Esas respuestas escritas no cambian la nota automática: tu profesora las retroalimenta con la skill Tutor Feed y decide su valoración.</p>
+        <p class="rubrica-nota">Tus explicaciones escritas no cambian esta nota: tu profesora las revisa aparte.</p>
       </div>
     </div>
   </section>
@@ -165,7 +155,7 @@
         <span class="step-label">Mapa de la ruta</span>
       </div>
       <h1 class="display" id="titulo-mapa" tabindex="-1">La ruta de los cambios</h1>
-      <p class="lead">Elige cualquier hito, en el orden que prefieras. Escucha o lee su explicación, responde la pregunta y vuelve aquí cuando quieras. El hito 01 trae un ejemplo ya resuelto, así que ábrelo primero si quieres ver cómo se conecta una causa con un efecto antes de razonar los demás.</p>
+      <p class="lead">Abre los hitos en el orden que prefieras. El hito 01 trae un ejemplo resuelto: ábrelo primero si quieres ver cómo se conecta una causa con su efecto.</p>
 
       <div class="map-layout">
         <ul class="timeline" id="timeline" aria-label="Hitos de la ruta"></ul>
@@ -177,7 +167,6 @@
           </div>
           <div class="map-message" id="mapa-mensaje">
             <strong id="mapa-mensaje-titulo">Faltan 4 hitos por explorar.</strong>
-            <span>No hay un orden obligatorio, así que abre cualquier tarjeta y luego vuelve a elegir.</span>
           </div>
           <button class="button button-primary button-block" data-action="go-actividad" disabled>Ir a la actividad final <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
           <p class="aside-help" id="actividad-ayuda">Se abre al resolver los cuatro hitos.</p>
@@ -256,7 +245,7 @@
               <span class="contador" id="contador-hito" aria-live="polite">0 / 15 palabras</span>
               <button class="button button-primary" type="button" data-action="guardar-explicacion" data-parte="hito"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Guardar mi explicación</button>
             </div>
-            <p class="help-text" id="ayuda-hito">Escribe al menos 15 palabras y guárdala: así el hito queda explorado. Tu profesora leerá tu explicación y te dará retroalimentación.</p>
+            <p class="help-text" id="ayuda-hito">Guárdala para marcar el hito como explorado.</p>
             <p class="explica-estado" id="estado-hito" role="status"></p>
           </section>
 
@@ -302,7 +291,7 @@
               <span class="contador" id="contador-actividad" aria-live="polite">0 / 15 palabras</span>
               <button class="button button-primary" type="button" data-action="guardar-explicacion" data-parte="actividad"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Guardar mi explicación</button>
             </div>
-            <p class="help-text" id="ayuda-actividad">Escribe al menos 15 palabras y guárdala para pasar a tu recomendación.</p>
+            <p class="help-text" id="ayuda-actividad">Guárdala para pasar a tu recomendación.</p>
             <p class="explica-estado" id="estado-actividad" role="status"></p>
           </section>
       <div class="screen-actions">
@@ -356,7 +345,7 @@
               <span class="contador" id="contador-propuesta" aria-live="polite">0 / 20 palabras</span>
               <button class="button button-primary" type="button" data-action="guardar-explicacion" data-parte="propuesta"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Guardar mi explicación</button>
             </div>
-            <p class="help-text" id="ayuda-propuesta">Escribe al menos 20 palabras y guárdala para ver el cierre.</p>
+            <p class="help-text" id="ayuda-propuesta">Guárdala para ver el cierre.</p>
             <p class="explica-estado" id="estado-propuesta" role="status"></p>
           </section>
       <div class="screen-actions">
@@ -395,26 +384,14 @@
           <h2 id="desempeno-nivel">—</h2>
           <div class="desempeno-nota"><strong id="desempeno-numero">—</strong><span>sobre 5.0 · escala de valoración de la Universidad</span></div>
           <div id="desempeno-detalle" class="desempeno-detalle"></div>
-          <div class="codigo-card">
-            <h3>Código para tu docente</h3>
-            <p>Muéstrale o dile este código a tu profesora: ella lo registrará en su panel para llevar el control del curso.</p>
-            <div class="codigo-valor">
-              <span class="codigo-texto" id="codigo-desempeno">—</span>
-              <button class="button button-on-dark" data-action="copiar-codigo"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg> Copiar código</button>
-              <span class="codigo-copiado" id="codigo-copiado-msg" hidden>Copiado.</span>
-            </div>
-          </div>
-          <button class="button button-on-dark button-block" data-action="descargar-reporte"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Descargar reporte para tu profesora</button>
+          <p class="envio-estado" id="envio-estado" role="status" hidden></p>
+          <button class="button button-on-dark button-block" data-action="descargar-reporte"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Descargar mi reporte</button>
         </section>
       </div>
 
       <section class="escritas" aria-labelledby="titulo-escritas">
-        <div class="escritas-head">
-          <h2 class="section-title" id="titulo-escritas">Tus respuestas escritas</h2>
-          <button class="button button-secondary" data-action="copiar-todo"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg> Copiar todo</button>
-        </div>
-        <p class="lead">Tu profesora usará estos bloques con la skill Tutor Feed para darte retroalimentación y pistas. También aparecen en el reporte descargable.</p>
-        <ol class="bloques-skill" id="resumen-escritas"></ol>
+        <h2 class="section-title" id="titulo-escritas">Tus respuestas escritas</h2>
+        <ol class="respuestas-lista" id="resumen-escritas"></ol>
       </section>
 
       <section class="chain-section" aria-labelledby="titulo-cadena">
@@ -458,7 +435,7 @@
 
   <!-- 5b. PANEL DOCENTE (acceso restringido) -->
   <section id="screen-docente" class="screen" aria-labelledby="titulo-docente" hidden>
-    <div class="page page-narrow">
+    <div class="page">
       <div class="screen-top">
         <button class="back-link" data-action="go-welcome"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver a la bienvenida</button>
         <span class="step-label">Panel docente</span>
@@ -467,84 +444,86 @@
       <div id="docente-bloqueado" class="docente-gate">
         <svg class="gate-icon" aria-hidden="true"><use href="#i-lock"/></svg>
         <h1 class="display" id="titulo-docente" tabindex="-1">Panel de la docente</h1>
-        <p class="muted">Ingresa el código de acceso para ver el dashboard de desempeño del curso.</p>
+        <p class="muted">Ingresa el código de acceso para ver los resultados del curso.</p>
         <label for="input-clave-docente" class="sr-only">Código de acceso docente</label>
-        <input type="password" id="input-clave-docente" autocomplete="off" placeholder="Código de acceso" inputmode="text">
+        <input type="password" id="input-clave-docente" autocomplete="off" placeholder="Código de acceso" maxlength="200">
         <div class="docente-error" id="docente-error" role="alert"></div>
-        <button class="button button-primary" data-action="entrar-docente">Entrar <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <button class="button button-primary" data-action="entrar-docente" id="btn-entrar-docente">Entrar <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
       </div>
 
       <div id="docente-dashboard" hidden>
-        <h1 class="display" tabindex="-1">Dashboard de desempeño</h1>
-        <p class="lead">Registra aquí el código corto que cada estudiante te muestra al terminar la ruta. El nivel y la nota se calculan automáticamente a partir del código; el nombre lo escribes tú.</p>
-
-        <div class="guia-slot" id="guia-dashboard"></div>
-
-        <section class="pegar" aria-labelledby="titulo-pegar">
-          <h2 id="titulo-pegar" class="h-icon"><svg class="icon" aria-hidden="true"><use href="#i-doc"/></svg> Pegar respuestas del reporte</h2>
-          <p class="muted">Opcional. Pega el texto que te envió el estudiante (su "Copiar todo" o lo copiado del reporte). El panel lo separa en bloques listos para pegar, uno por mensaje, en Tutor Feed.</p>
-          <label class="field-label" for="input-pegar">Texto copiado del estudiante</label>
-          <textarea id="input-pegar" class="explica-texto" rows="6" aria-describedby="pegar-estado"></textarea>
-          <div class="screen-actions">
-            <button class="button button-primary" type="button" data-action="separar-bloques">Separar en bloques</button>
+        <div class="dash-head">
+          <h1 class="display" id="titulo-dashboard" tabindex="-1">Resultados del curso</h1>
+          <div class="dash-acciones">
+            <button class="button button-secondary" data-action="actualizar-docente"><svg class="icon" aria-hidden="true"><use href="#i-replay"/></svg> Actualizar</button>
+            <button class="button button-secondary" data-action="exportar-docente"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Exportar CSV</button>
+            <button class="button button-quiet" data-action="salir-docente">Cerrar sesión</button>
           </div>
-          <p class="explica-estado" id="pegar-estado" role="status"></p>
-          <ol class="bloques-skill" id="pegar-bloques"></ol>
+        </div>
+        <p class="dash-estado" id="dash-estado" role="status"></p>
+
+        <section class="dash-resumen" aria-label="Resumen">
+          <article class="dash-card">
+            <p class="card-label">Estudiantes</p>
+            <strong class="dash-num" id="dash-total">0</strong>
+            <span class="dash-sub" id="dash-total-sub"></span>
+          </article>
+          <article class="dash-card">
+            <p class="card-label">Promedio</p>
+            <strong class="dash-num" id="dash-promedio">—</strong>
+            <span class="dash-sub">sobre 5.0</span>
+          </article>
+          <article class="dash-card dash-card--niveles">
+            <p class="card-label">Distribución por nivel</p>
+            <ul class="dash-niveles" id="dash-niveles"></ul>
+          </article>
         </section>
 
-        <h2 class="section-title">Registro de desempeño</h2>
-        <div class="docente-toolbar">
-          <span class="muted" id="docente-contador">0 estudiantes registrados</span>
-          <button class="button button-secondary" data-action="salir-docente">Cerrar sesión docente</button>
+        <div class="dash-filtros">
+          <div class="field">
+            <label for="filtro-grado">Grado</label>
+            <select id="filtro-grado">
+              <option value="">Todos</option>
+              <option value="10.º">10.º</option>
+              <option value="11.º">11.º</option>
+            </select>
+          </div>
+          <div class="field dash-buscar">
+            <label for="filtro-nombre">Buscar por nombre</label>
+            <input type="search" id="filtro-nombre" placeholder="Nombre o apellido" autocomplete="off">
+          </div>
         </div>
 
-        <form class="docente-form" id="form-docente" autocomplete="off">
-          <div class="docente-form-grid">
-            <div class="field">
-              <label for="input-nombre-docente">Nombre del estudiante</label>
-              <input type="text" id="input-nombre-docente" placeholder="Nombre y apellido">
-            </div>
-            <div class="field">
-              <label for="input-codigo-docente">Código mostrado por el estudiante</label>
-              <input type="text" id="input-codigo-docente" class="input-mono" placeholder="Ej: RD-7KQ-M4XP">
-            </div>
-            <button class="button button-primary" type="submit">Agregar</button>
-          </div>
-          <div class="field-error docente-form-error" id="docente-form-error" role="alert"></div>
-        </form>
-
         <div class="table-wrap">
-          <table class="data-table docente-tabla" id="docente-tabla">
+          <table class="data-table docente-tabla">
+            <caption class="sr-only">Resultados de los estudiantes</caption>
             <thead>
-              <tr><th scope="col">Estudiante</th><th scope="col">Fecha</th><th scope="col">Nota</th><th scope="col">Nivel</th><th scope="col">Código</th><th scope="col"><span class="sr-only">Acciones</span></th></tr>
+              <tr><th scope="col">Estudiante</th><th scope="col">Grado</th><th scope="col">Nivel</th><th scope="col">Nota</th><th scope="col">Fecha</th><th scope="col"><span class="sr-only">Acciones</span></th></tr>
             </thead>
             <tbody id="docente-tabla-cuerpo"></tbody>
           </table>
-          <p class="docente-vacio" id="docente-vacio">Aún no hay estudiantes registrados en este equipo.</p>
+          <p class="docente-vacio" id="docente-vacio" hidden></p>
         </div>
 
-        <div class="screen-actions">
-          <button class="button button-secondary" data-action="cargar-prueba"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg> Cargar registros de prueba</button>
-          <button class="button button-secondary" data-action="quitar-prueba">Quitar registros de prueba</button>
-          <button class="button button-secondary" data-action="exportar-docente"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Exportar CSV</button>
-          <button class="button button-danger" data-action="vaciar-docente">Vaciar registros de este equipo</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5c. GUÍA DOCENTE PÚBLICA (sin datos del curso) -->
-  <section id="screen-guia" class="screen" aria-labelledby="titulo-guia" hidden>
-    <div class="page page-narrow">
-      <div class="screen-top">
-        <button class="back-link" data-action="go-welcome"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver a la bienvenida</button>
-        <span class="step-label">Guía docente <span class="step-sub">· Retroalimentar con IA</span></span>
-      </div>
-      <h1 class="display" id="titulo-guia" tabindex="-1">Cómo retroalimentar <em>con IA</em></h1>
-      <p class="lead">Esta guía explica cómo usar la skill Tutor Feed con las explicaciones escritas de tus estudiantes. Los registros del curso siguen protegidos en el panel docente.</p>
-      <div class="guia-slot" id="guia-publica"></div>
-      <div class="screen-actions">
-        <button class="button button-secondary" data-action="go-docente"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Ir al panel docente</button>
+        <section class="dash-detalle" id="docente-detalle" aria-labelledby="detalle-nombre" hidden>
+          <div class="dash-detalle-head">
+            <div>
+              <p class="card-label" id="detalle-meta"></p>
+              <h2 id="detalle-nombre" tabindex="-1"></h2>
+            </div>
+            <button class="button button-quiet" data-action="cerrar-detalle"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg> Volver a la lista</button>
+          </div>
+          <div class="dash-detalle-grid">
+            <div class="dash-detalle-nota">
+              <strong id="detalle-nota"></strong>
+              <span class="docente-nivel-chip" id="detalle-nivel"></span>
+            </div>
+            <div class="dash-criterios" id="detalle-criterios"></div>
+          </div>
+          <ul class="dash-conteos" id="detalle-conteos"></ul>
+          <h3 class="dash-subtitulo">Respuestas escritas</h3>
+          <ol class="bloques-skill" id="detalle-respuestas"></ol>
+        </section>
       </div>
     </div>
   </section>
@@ -578,55 +557,11 @@
 
 </main>
 
-<template id="tpl-guia">
-  <section class="guia" aria-label="Retroalimentar con la skill Tutor Feed">
-    <div class="guia-head">
-      <div>
-        <h2 class="guia-titulo">Retroalimentar con la skill Tutor Feed</h2>
-        <p>Tutor Feed es una Gem de Gemini hecha para este RED. Lee <strong>una</strong> respuesta escrita del estudiante y devuelve diagnóstico, retroalimentación y pistas graduales sin dar la respuesta. <strong>No pone notas.</strong></p>
-      </div>
-      <a class="button button-on-dark guia-enlace" href="https://gemini.google.com/gem/5ed2eb3f2dbb" target="_blank" rel="noopener noreferrer">Abrir Tutor Feed <svg class="icon" aria-hidden="true"><use href="#i-external"/></svg><span class="sr-only"> (se abre en una pestaña nueva)</span></a>
-    </div>
-    <ol class="guia-pasos">
-      <li><span class="guia-icono" aria-hidden="true"><svg class="icon"><use href="#i-doc"/></svg></span><div><strong>Recibe las respuestas.</strong> El estudiante te entrega el reporte descargado o copia sus respuestas con "Copiar todo". Si te las pega en un mensaje, usa "Pegar respuestas del reporte" en este panel.</div></li>
-      <li><span class="guia-icono" aria-hidden="true"><svg class="icon"><use href="#i-external"/></svg></span><div><strong>Abre Tutor Feed.</strong> Usa el botón "Abrir Tutor Feed": se abre en una pestaña nueva con tu cuenta de Google.</div></li>
-      <li><span class="guia-icono" aria-hidden="true"><svg class="icon"><use href="#i-chat"/></svg></span><div><strong>Pega un bloque por mensaje.</strong> Cada bloque trae el hito o parte, la pregunta, la respuesta, los criterios y el grado. Usa "Copiar para Tutor Feed" y envíalo tal cual.</div></li>
-      <li><span class="guia-icono" aria-hidden="true"><svg class="icon"><use href="#i-eye"/></svg></span><div><strong>Revisa y decide.</strong> Lee la nota para el docente y elige qué pistas entregar al estudiante, y en qué orden.</div></li>
-      <li><span class="guia-icono" aria-hidden="true"><svg class="icon"><use href="#i-scale"/></svg></span><div><strong>Tú valoras.</strong> La skill no califica: la valoración de las respuestas escritas la decides tú. La nota automática del RED solo mide las actividades de selección.</div></li>
-    </ol>
-    <div class="guia-ejemplos">
-      <figure class="guia-ejemplo">
-        <figcaption>Ejemplo de bloque para pegar</figcaption>
-        <pre class="bloque-texto">Hito o parte: Hito 02 · La World Wide Web (1989)
-Pregunta: ¿Cuál fue la causa de este hito y qué cambió en la forma de compartir información por eso?
-Respuesta del estudiante: "La web hizo que cualquiera pudiera entrar a páginas con enlaces sin saber programar, entonces más gente empezó a leer y publicar cosas."
-Criterios: por defecto
-Grado: 11.º</pre>
-      </figure>
-      <figure class="guia-ejemplo">
-        <figcaption>Qué te devuelve la skill (resumen)</figcaption>
-        <ul class="guia-devuelve">
-          <li><strong>Tabla de diagnóstico</strong> por criterio: Comprensión, Análisis, Aplicación y Argumentación.</li>
-          <li><strong>Retroalimentación</strong> sobre lo que la respuesta logra y lo que le falta.</li>
-          <li><strong>Preguntas y pistas graduales</strong> que orientan sin dar la respuesta.</li>
-          <li><strong>Pregunta de reflexión</strong> para el estudiante.</li>
-          <li><strong>Nota para el docente</strong> con lo que conviene revisar en clase.</li>
-        </ul>
-      </figure>
-    </div>
-    <div class="guia-casos">
-      <h3 class="guia-casos-titulo">Casos de prueba de la skill (los del documento)</h3>
-      <p class="muted">Son los dos mensajes con los que se probó Tutor Feed. Sirven para probar la skill en clase frente a la profesora: copia uno, pégalo en Tutor Feed y compara lo que responde con lo que se esperaba.</p>
-      <ol class="bloques-skill guia-casos-lista"></ol>
-    </div>
-  </section>
-</template>
-
 <footer class="colophon">
   <p>De ARPANET al feed · Reto RED-1011-N-25 · Licenciatura en Informática y Medios Audiovisuales, Universidad de Córdoba, Montería</p>
 </footer>
 
-<script src="js/data.js?v=20261118"></script>
-<script src="js/app.js?v=20261118"></script>
+<script src="js/data.js?v=20261125"></script>
+<script src="js/app.js?v=20261125"></script>
 </body>
 </html>
