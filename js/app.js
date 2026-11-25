@@ -1,8 +1,8 @@
 /* ==========================================================================
    De ARPANET al feed · RED-1011-N-25
    LÓGICA DEL RECURSO — navegación, preguntas, actividad, producto final,
-   nota, código de desempeño, reporte, panel docente y progreso guardado.
-   Requiere js/data.js (HITOS, TRANSFORMACIONES_POOL, BLOQUES_*).
+   nota, envío automático del resultado, reporte, panel docente y progreso.
+   Requiere js/data.js (HITOS, TRANSFORMACIONES_POOL, BLOQUES_*, CONSIGNAS).
    ========================================================================== */
 "use strict";
 
@@ -54,11 +54,10 @@ const estado = {
   propuestaOmitida: false,
   nombreEstudiante: "",
   grado: "",
-  // Explicaciones escritas del estudiante (nunca entran en el código RD).
+  // Explicaciones escritas del estudiante (no cambian la nota automática).
   explicaciones: { hito: {}, actividad: "", propuesta: "" },
-  codigoDesempeno: null,
-  // Resultado del PRIMER recorrido completo (se fija al llegar al cierre por
-  // primera vez); "Recorrer de nuevo" no lo borra.
+  // Resultado del PRIMER recorrido completo (se fija y se envía a la docente al
+  // llegar al cierre por primera vez); "Recorrer de nuevo" no lo borra.
   primerResultado: null,
   recorridoRepetido: false,
   pantalla: "screen-bienvenida",
@@ -205,7 +204,7 @@ function mostrarPantalla(id, mensaje) {
   if (titulo) window.setTimeout(() => titulo.focus(), 30);
   if (mensaje) anunciar(mensaje);
   document.getElementById("main").scrollIntoView({ block: "start" });
-  if (id !== "screen-docente" && id !== "screen-guia") {
+  if (id !== "screen-docente") {
     estado.pantalla = id;
     guardarProgreso();
   }
@@ -710,7 +709,7 @@ function reintentarPropuesta() {
 
 
 // ============================================================
-// EVALUACIÓN DOCENTE — desempeño y reporte descargable
+// EVALUACIÓN — desempeño y reporte descargable
 // ============================================================
 function conteosActuales() {
   return {
@@ -722,7 +721,7 @@ function conteosActuales() {
   };
 }
 
-// La nota y el código usan el resultado del PRIMER recorrido completo, si existe.
+// La nota usa el resultado del PRIMER recorrido completo, si existe.
 function conteosParaNota() {
   return estado.primerResultado ? estado.primerResultado.conteos : conteosActuales();
 }
@@ -808,111 +807,6 @@ function calcularDesempeno() {
   return calcularDesempenoDesde(conteosParaNota());
 }
 
-// ============================================================
-// CÓDIGO CORTO PARA EL PANEL DOCENTE
-// ------------------------------------------------------------
-// Formato RD-XXX-XXXX (11 caracteres, sin 0/O/1/I/L). Los 3 primeros
-// caracteres guardan los conteos de errores desplazados por un hash del
-// nombre normalizado; los 4 últimos son un checksum FNV-1a sobre
-// nombre + núcleo + sal. Así el código solo es válido para el nombre con
-// el que se generó y no se puede inventar a mano con facilidad.
-// ============================================================
-const CODIGO_ALFABETO = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
-const CODIGO_BASE = CODIGO_ALFABETO.length; // 31
-const CODIGO_SAL = "ARPANET>feed|1011-N-25|cadena-causal";
-const CODIGO_MAX = { pregunta: 12, transformacion: 6, aplicacion: 5, argumentacion: 5 };
-const CODIGO_COMBINACIONES = 13 * 7 * 6 * 6 * 2; // 6552
-const CODIGO_ESPACIO_NUCLEO = CODIGO_BASE * CODIGO_BASE * CODIGO_BASE; // 29791
-const CODIGO_ESPACIO_CHECK = CODIGO_ESPACIO_NUCLEO * CODIGO_BASE; // 923521
-
-function fnv1a(texto, semilla) {
-  let h = (semilla === undefined ? 0x811c9dc5 : semilla) >>> 0;
-  for (let i = 0; i < texto.length; i++) {
-    h ^= texto.charCodeAt(i);
-    h = Math.imul(h, 0x01000193) >>> 0;
-  }
-  // Mezcla final para repartir mejor los bits bajos.
-  h ^= h >>> 16; h = Math.imul(h, 0x45d9f3b) >>> 0; h ^= h >>> 16;
-  return h >>> 0;
-}
-
-function normalizarNombre(nombre) {
-  return String(nombre || "")
-    .normalize("NFD").replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[.]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function aAlfabeto(n, largo) {
-  let s = "";
-  for (let i = 0; i < largo; i++) { s = CODIGO_ALFABETO[n % CODIGO_BASE] + s; n = Math.floor(n / CODIGO_BASE); }
-  return s;
-}
-
-function desdeAlfabeto(s) {
-  let n = 0;
-  for (const ch of s) {
-    const v = CODIGO_ALFABETO.indexOf(ch);
-    if (v < 0) return -1;
-    n = n * CODIGO_BASE + v;
-  }
-  return n;
-}
-
-function empaquetarConteos(c) {
-  const q = Math.min(c.pregunta, CODIGO_MAX.pregunta);
-  const t = Math.min(c.transformacion, CODIGO_MAX.transformacion);
-  const ap = Math.min(c.aplicacion, CODIGO_MAX.aplicacion);
-  const ar = Math.min(c.argumentacion, CODIGO_MAX.argumentacion);
-  const om = c.omitida ? 1 : 0;
-  return q + 13 * (t + 7 * (ap + 6 * (ar + 6 * om)));
-}
-
-function desempaquetarConteos(n) {
-  const pregunta = n % 13; n = Math.floor(n / 13);
-  const transformacion = n % 7; n = Math.floor(n / 7);
-  const aplicacion = n % 6; n = Math.floor(n / 6);
-  const argumentacion = n % 6; n = Math.floor(n / 6);
-  return { pregunta, transformacion, aplicacion, argumentacion, omitida: n === 1 };
-}
-
-function checksumCodigo(nombreNorm, nucleo) {
-  const a = fnv1a(`${nombreNorm}|${nucleo}|${CODIGO_SAL}`);
-  const b = fnv1a(`${CODIGO_SAL}#${nucleo}#${nombreNorm}`, a);
-  return aAlfabeto(b % CODIGO_ESPACIO_CHECK, 4);
-}
-
-function generarCodigoDesde(nombre, c) {
-  const nombreNorm = normalizarNombre(nombre);
-  const desplazamiento = fnv1a(`${nombreNorm}|${CODIGO_SAL}`) % CODIGO_ESPACIO_NUCLEO;
-  const nucleo = aAlfabeto((empaquetarConteos(c) + desplazamiento) % CODIGO_ESPACIO_NUCLEO, 3);
-  return `RD-${nucleo}-${checksumCodigo(nombreNorm, nucleo)}`;
-}
-
-function generarCodigoDesempeno() {
-  const nombre = estado.primerResultado ? estado.primerResultado.nombre : estado.nombreEstudiante;
-  return generarCodigoDesde(nombre, conteosParaNota());
-}
-
-// Decodifica un código para un nombre concreto. Devuelve
-// { ok: true, codigo, nota, desempeno } o { ok: false, motivo }.
-function decodificarCodigoDesempeno(codigoOriginal, nombre) {
-  const limpio = String(codigoOriginal || "").toUpperCase().replace(/[^0-9A-Z]/g, "").replace(/^RD/, "");
-  if (limpio.length !== 7 || desdeAlfabeto(limpio) < 0) return { ok: false, motivo: "formato" };
-  const nucleo = limpio.slice(0, 3);
-  const check = limpio.slice(3);
-  const nombreNorm = normalizarNombre(nombre);
-  if (checksumCodigo(nombreNorm, nucleo) !== check) return { ok: false, motivo: "nombre" };
-  const desplazamiento = fnv1a(`${nombreNorm}|${CODIGO_SAL}`) % CODIGO_ESPACIO_NUCLEO;
-  const empaquetado = (desdeAlfabeto(nucleo) - desplazamiento + CODIGO_ESPACIO_NUCLEO) % CODIGO_ESPACIO_NUCLEO;
-  if (empaquetado >= CODIGO_COMBINACIONES) return { ok: false, motivo: "nombre" };
-
-  const c = desempaquetarConteos(empaquetado);
-  return { ok: true, codigo: `RD-${nucleo}-${check}`, nota: calcularNotaDesde(c), desempeno: calcularDesempenoDesde(c) };
-}
-
 function construirReporteHTML() {
   const d = calcularDesempeno();
   const nota = calcularNota();
@@ -928,10 +822,10 @@ function construirReporteHTML() {
     ? estado.resultadoFinal.map((p) => `<div class="fila"><strong>${escaparHTML(p.transformacion)}</strong><span>Causada por ${escaparHTML(p.hito)}. ${escaparHTML(p.causa)}</span></div>`).join("")
     : `<div class="fila"><span>No se completó la actividad de relación causa-efecto.</span></div>`;
 
-  const bloquesSkill = construirBloquesSkill();
-  const escritasHTML = bloquesSkill.length
-    ? bloquesSkill.map((b) => `<div class="bloque"><div class="bloque-head"><strong>${escaparHTML(b.titulo)}</strong><button type="button" class="copiar">Copiar para Tutor Feed</button></div><pre>${escaparHTML(b.texto)}</pre></div>`).join("")
-    : `<p>No hay respuestas escritas guardadas.</p>`;
+  const respuestas = construirRespuestasEscritas();
+  const escritasHTML = respuestas.length
+    ? respuestas.map((r) => `<div class="fila"><strong>${escaparHTML(r.parte)}</strong><span><em>${escaparHTML(r.pregunta)}</em><br>${escaparHTML(r.respuesta)}</span></div>`).join("")
+    : `<div class="fila"><span>No hay respuestas escritas guardadas.</span></div>`;
 
   const propuestaHTML = estado.propuestaValidada
     ? `<div class="fila"><strong>${escaparHTML(estado.propuestaValidada.estrategia)}</strong><span><em>Porque:</em> ${escaparHTML(estado.propuestaValidada.justificacion)}<br><em>Evidencia:</em> ${escaparHTML(estado.propuestaValidada.evidencia)}</span></div>`
@@ -959,7 +853,6 @@ function construirReporteHTML() {
   .meta div:last-child { border-right: 0; }
   .meta span { display: block; font-size: 0.75rem; font-weight: 700; color: var(--on-dark-2); text-transform: uppercase; letter-spacing: 0.06em; }
   .meta strong { font-size: 0.98rem; overflow-wrap: anywhere; }
-  .meta .codigo strong { font-family: var(--mono); letter-spacing: 0.04em; }
   section { padding: 20px 0; border-bottom: 1px solid var(--rule); }
   section:nth-of-type(even) { background: linear-gradient(160deg, #F4F6FD, #E4EAFA); margin: 0 -32px; padding: 20px 32px; }
   h2 { font-family: var(--serif); font-weight: 600; font-size: 1.15rem; margin: 0 0 12px; }
@@ -981,16 +874,6 @@ function construirReporteHTML() {
   .fila span { color: var(--ink-2); font-size: 0.94rem; }
   .aviso { font-size: 0.8rem; color: var(--ink-2); text-align: center; margin: 22px 0 0; }
   @media (max-width: 560px) { .reporte { padding: 0 18px 24px; } header { margin: 0 -18px; padding: 24px 18px 20px; } section:nth-of-type(even) { margin: 0 -18px; padding: 20px 18px; } h1 { font-size: 1.7rem; } }
-  .skill-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .skill-ayuda { font-size: 0.88rem; color: var(--ink-2); margin: 0 0 12px; overflow-wrap: anywhere; }
-  .bloque { border: 1px solid var(--rule); border-radius: 14px; background: #fff; padding: 12px 14px; margin: 0 0 12px; }
-  .bloque-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-  pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; color: var(--ink); background: #F3F5FC; border-radius: 10px; padding: 10px 12px; }
-  button.copiar { font: inherit; font-size: 0.85rem; font-weight: 700; color: var(--on-dark); background: var(--grad-box); border: 1px solid var(--rose-gold); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
-  button.copiar:active { transform: scale(0.97); }
-  button.copiar:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
-  .copiar-estado { font-size: 0.85rem; color: var(--green); font-weight: 700; min-height: 1.2em; margin: 0; }
-  @media print { button.copiar { display: none; } }
   @media print { body { padding: 0; background: #fff; } .reporte { border: 0; } section:nth-of-type(even) { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
@@ -1002,8 +885,8 @@ function construirReporteHTML() {
     <h1>Reporte de <em>desempeño</em></h1>
     <div class="meta">
       <div><span>Estudiante</span><strong>${escaparHTML(estado.nombreEstudiante || "(sin nombre registrado)")}</strong></div>
+      <div><span>Grado</span><strong>${escaparHTML(estado.grado || "—")}</strong></div>
       <div><span>Fecha</span><strong>${escaparHTML(fecha)}</strong></div>
-      <div class="codigo"><span>Código</span><strong>${escaparHTML(generarCodigoDesempeno())}</strong></div>
     </div>
   </header>
 
@@ -1014,7 +897,7 @@ function construirReporteHTML() {
       <div class="nota-texto">
         <span class="nota-nivel">${escaparHTML(d.nivel)}</span>
         <p>${escaparHTML(d.mensaje)}</p>${estado.recorridoRepetido && estado.primerResultado ? `
-        <p><strong>Nota del primer recorrido.</strong> El estudiante repitió la ruta; se conserva el resultado de su primer intento.</p>` : ""}
+        <p><strong>Nota del primer recorrido.</strong> La ruta se repitió para practicar; se conserva el resultado del primer intento.</p>` : ""}
       </div>
     </div>
   </section>
@@ -1038,11 +921,9 @@ function construirReporteHTML() {
     ${propuestaHTML}
   </section>
 
-  <section class="skill">
-    <div class="skill-head"><h2>Respuestas escritas para Tutor Feed</h2>${bloquesSkill.length ? '<button type="button" class="copiar" data-todo>Copiar todo</button>' : ""}</div>
-    <p class="skill-ayuda">Para la docente: abre la skill Tutor Feed (${escaparHTML(TUTOR_FEED_URL)}) y pega un bloque por mensaje. La skill da retroalimentación y pistas; no pone notas.</p>
+  <section>
+    <h2>Respuestas escritas</h2>
     ${escritasHTML}
-    <p class="copiar-estado" role="status"></p>
   </section>
 
   <section>
@@ -1053,31 +934,6 @@ function construirReporteHTML() {
   <p class="aviso">Nota referencial generada automáticamente por el RED según pistas usadas durante el recorrido. No reemplaza el criterio de evaluación docente.</p>
 
 </main>
-<script>
-(function () {
-  function seleccionar(el) { try { var r = document.createRange(); r.selectNodeContents(el); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} }
-  function aviso(t) { var e = document.querySelector(".copiar-estado"); if (e) e.textContent = t; }
-  function copiar(texto, el, btn) {
-    function listo() { aviso("Copiado. Pégalo en Tutor Feed, un bloque por mensaje."); var o = btn.textContent; btn.textContent = "Copiado"; setTimeout(function () { btn.textContent = o; }, 1800); }
-    function respaldo() {
-      try { var t = document.createElement("textarea"); t.value = texto; t.setAttribute("readonly", ""); t.style.position = "fixed"; t.style.opacity = "0"; document.body.appendChild(t); t.select(); var ok = document.execCommand("copy"); document.body.removeChild(t); if (ok) { listo(); return; } } catch (e) {}
-      seleccionar(el); aviso("No se pudo copiar automáticamente. El texto quedó seleccionado: cópialo con Ctrl+C.");
-    }
-    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(texto).then(listo, respaldo); } else { respaldo(); }
-  }
-  document.addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("button.copiar") : null;
-    if (!b) return;
-    if (b.hasAttribute("data-todo")) {
-      var pres = Array.prototype.slice.call(document.querySelectorAll(".skill pre"));
-      copiar(pres.map(function (p) { return p.textContent; }).join("\\n\\n"), document.querySelector(".skill"), b);
-    } else {
-      var p = b.closest(".bloque").querySelector("pre");
-      copiar(p.textContent, p, b);
-    }
-  });
-})();
-</script>
 </body>
 </html>`;
 }
@@ -1098,14 +954,17 @@ function descargarReporte() {
 // ============================================================
 // CIERRE
 // ============================================================
-// Guarda el resultado del primer recorrido la primera vez que se llega al cierre.
+// Guarda el resultado del primer recorrido la primera vez que se llega al cierre
+// y lo deja en la cola de envío a la docente.
 function fijarPrimerResultado() {
   if (estado.primerResultado) return;
   estado.primerResultado = {
     nombre: estado.nombreEstudiante,
     conteos: conteosActuales(),
     fecha: new Date().toISOString(),
+    attemptId: nuevoIdIntento(),
   };
+  encolarResultado(estado.primerResultado);
 }
 
 function generarResumen() {
@@ -1135,13 +994,9 @@ function generarResumen() {
   animarNota(document.getElementById("desempeno-numero"), nota.promedio);
   const detalleWrap = document.getElementById("desempeno-detalle");
   const avisoRepetido = repetido
-    ? `<p><strong>Nota del primer recorrido:</strong> repetiste la ruta para practicar; la nota y el código corresponden a tu primer recorrido.</p>`
+    ? `<p>Repetiste la ruta para practicar: la nota es la de tu primer recorrido.</p>`
     : "";
   detalleWrap.innerHTML = `${avisoRepetido}<p>${escaparHTML(d.mensaje)}</p><ul>${d.detalle.map((l) => `<li>${escaparHTML(l)}</li>`).join("")}</ul><p><strong>Siguiente paso:</strong> ${escaparHTML(d.siguientePaso)}</p>`;
-
-  estado.codigoDesempeno = generarCodigoDesempeno();
-  document.getElementById("codigo-desempeno").textContent = estado.codigoDesempeno;
-  document.getElementById("codigo-copiado-msg").hidden = true;
 
   const evidenciaWrap = document.getElementById("resumen-evidencia");
   evidenciaWrap.innerHTML = "";
@@ -1160,10 +1015,10 @@ function generarResumen() {
     item.innerHTML = `<span class="chain-year">${escaparHTML(h.anio)}</span><strong>${escaparHTML(h.titulo)}</strong><span>${escaparHTML(h.causa)}</span>`;
     cadena.appendChild(item);
   });
-  renderBloquesSkill(document.getElementById("resumen-escritas"), construirBloquesSkill(), "Aún no hay respuestas escritas guardadas.");
+  renderRespuestasEstudiante(document.getElementById("resumen-escritas"), construirRespuestasEscritas());
   guardarProgreso();
-  // Los créditos de imagen ya están fijos en el HTML de la pantalla de créditos
-  // (no dependen de haber llegado hasta aquí para existir).
+  mostrarEstadoEnvio();
+  enviarPendientes();
 }
 
 // ============================================================
@@ -1243,7 +1098,7 @@ function animarNota(el, valor) {
 
 // ============================================================
 // RESPUESTAS ESCRITAS — explicaciones con palabras propias
-// (se escapan al mostrarse y nunca entran en el código RD)
+// (se escapan al mostrarse; no cambian la nota automática)
 // ============================================================
 function actualizarBotonInicio() {
   const nombreOk = evaluarNombre(document.getElementById("input-nombre").value).valido;
@@ -1337,33 +1192,61 @@ function inicializarExplicaciones() {
 }
 
 // ------------------------------------------------------------
-// Bloques para la skill docente Tutor Feed (una línea por campo)
+// Respuestas escritas: lista que se envía a la docente y bloques
+// para la skill Tutor Feed (una línea por campo)
 // ------------------------------------------------------------
-function formatearBloqueSkill(parte, pregunta, respuesta) {
-  const limpia = String(respuesta).replace(/\s+/g, " ").trim();
+function construirRespuestasEscritas() {
+  const respuestas = [];
+  Object.keys(HITOS).forEach((n) => {
+    const texto = estado.explicaciones.hito[n];
+    if (texto) respuestas.push({ parte: `Hito ${String(n).padStart(2, "0")} · ${HITOS[n].titulo} (${HITOS[n].anio})`, pregunta: CONSIGNAS.hito, respuesta: texto });
+  });
+  if (estado.explicaciones.actividad) respuestas.push({ parte: "Actividad de relaciones", pregunta: CONSIGNAS.actividad, respuesta: estado.explicaciones.actividad });
+  if (estado.explicaciones.propuesta && estado.propuestaValidada) respuestas.push({ parte: "Recomendación final", pregunta: CONSIGNAS.propuesta, respuesta: estado.explicaciones.propuesta });
+  return respuestas;
+}
+
+function formatearBloqueSkill(respuesta, grado) {
+  const limpia = String(respuesta.respuesta).replace(/\s+/g, " ").trim();
   return {
-    titulo: parte,
+    titulo: respuesta.parte,
     texto: [
-      `Hito o parte: ${parte}`,
-      `Pregunta: ${pregunta}`,
+      `Hito o parte: ${respuesta.parte}`,
+      `Pregunta: ${respuesta.pregunta}`,
       `Respuesta del estudiante: "${limpia}"`,
       "Criterios: por defecto",
-      `Grado: ${estado.grado || "(sin grado)"}`,
+      `Grado: ${grado || "(sin grado)"}`,
     ].join("\n"),
   };
 }
 
-function construirBloquesSkill() {
-  const bloques = [];
-  Object.keys(HITOS).forEach((n) => {
-    const texto = estado.explicaciones.hito[n];
-    if (texto) bloques.push(formatearBloqueSkill(`Hito ${String(n).padStart(2, "0")} · ${HITOS[n].titulo} (${HITOS[n].anio})`, CONSIGNAS.hito, texto));
+// Cierre del estudiante: sus respuestas, en texto simple.
+function renderRespuestasEstudiante(lista, respuestas) {
+  lista.innerHTML = "";
+  if (!respuestas.length) {
+    const li = document.createElement("li");
+    li.className = "bloques-vacio";
+    li.textContent = "Aún no hay respuestas escritas guardadas.";
+    lista.appendChild(li);
+    return;
+  }
+  respuestas.forEach((r, i) => {
+    const li = document.createElement("li");
+    li.className = "respuesta-item";
+    li.style.setProperty("--i", i);
+    const titulo = document.createElement("strong");
+    titulo.textContent = r.parte;
+    const pregunta = document.createElement("span");
+    pregunta.className = "respuesta-pregunta";
+    pregunta.textContent = r.pregunta;
+    const texto = document.createElement("p");
+    texto.textContent = r.respuesta;
+    li.append(titulo, pregunta, texto);
+    lista.appendChild(li);
   });
-  if (estado.explicaciones.actividad) bloques.push(formatearBloqueSkill("Actividad de relaciones", CONSIGNAS.actividad, estado.explicaciones.actividad));
-  if (estado.explicaciones.propuesta && estado.propuestaValidada) bloques.push(formatearBloqueSkill("Recomendación final", CONSIGNAS.propuesta, estado.explicaciones.propuesta));
-  return bloques;
 }
 
+// Panel docente: un bloque por respuesta, con su botón para copiarlo.
 function renderBloquesSkill(lista, bloques, textoVacio) {
   lista.innerHTML = "";
   if (!bloques.length) {
@@ -1410,7 +1293,7 @@ function seleccionarContenido(el) {
 
 function copiarTexto(texto, elemento, boton) {
   const listo = () => {
-    anunciar("Copiado. Pégalo en Tutor Feed, un bloque por mensaje.");
+    anunciar("Bloque copiado.");
     if (boton) {
       if (!boton.dataset.original) boton.dataset.original = boton.innerHTML;
       boton.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Copiado';
@@ -1438,112 +1321,129 @@ function copiarTexto(texto, elemento, boton) {
   else respaldo();
 }
 
-// ------------------------------------------------------------
-// Guía docente y separador de bloques pegados
-// ------------------------------------------------------------
-function montarGuias() {
-  const plantilla = document.getElementById("tpl-guia");
-  ["guia-publica", "guia-dashboard"].forEach((id) => {
-    const destino = document.getElementById(id);
-    if (destino && plantilla) destino.appendChild(plantilla.content.cloneNode(true));
-  });
-  document.querySelectorAll(".guia-casos-lista").forEach((lista) => renderCasosPrueba(lista));
-}
+// ============================================================
+// CONEXIÓN CON SUPABASE
+// Las tablas red_* no se pueden leer ni escribir directamente: todo pasa
+// por funciones RPC que validan los datos o el token de la docente (ver
+// supabase/schema.sql). La clave "publishable" es pública por diseño.
+// Si SUPABASE_URL queda vacía, el RED funciona sin envío ni panel.
+// ============================================================
+const SUPABASE_URL = "https://qlqpfpirdscqhsxkafio.supabase.co";
+const SUPABASE_KEY = "sb_publishable_zzffObHTO_5G7vvRo7ciKQ_FXZLqx-c";
 
-// Casos de prueba documentados: mensaje exacto + qué se esperaba + qué pasó.
-function renderCasosPrueba(lista) {
-  lista.innerHTML = "";
-  CASOS_PRUEBA.forEach((caso, i) => {
-    const li = document.createElement("li");
-    li.style.setProperty("--i", i);
-    const art = document.createElement("article");
-    art.className = "bloque-skill caso-prueba";
-    const head = document.createElement("div");
-    head.className = "bloque-skill-head";
-    const titulo = document.createElement("strong");
-    titulo.textContent = caso.titulo;
-    const boton = document.createElement("button");
-    boton.type = "button";
-    boton.className = "button button-secondary";
-    boton.dataset.action = "copiar-bloque";
-    boton.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg> Copiar para Tutor Feed';
-    boton.setAttribute("aria-label", `Copiar para Tutor Feed: ${caso.titulo}`);
-    head.append(titulo, boton);
-    const etiqueta = document.createElement("p");
-    etiqueta.className = "caso-etiqueta";
-    etiqueta.textContent = "Mensaje enviado a la skill";
-    const pre = document.createElement("pre");
-    pre.className = "bloque-texto";
-    pre.textContent = caso.mensaje;
-    const dl = document.createElement("dl");
-    dl.className = "caso-detalle";
-    const dt1 = document.createElement("dt"); dt1.textContent = "Qué se esperaba";
-    const dd1 = document.createElement("dd"); dd1.textContent = caso.esperado;
-    const dt2 = document.createElement("dt"); dt2.textContent = "Qué pasó y qué se ajustó";
-    const dd2 = document.createElement("dd");
-    const ul = document.createElement("ul");
-    caso.resultado.forEach((linea) => { const item = document.createElement("li"); item.textContent = linea; ul.appendChild(item); });
-    dd2.appendChild(ul);
-    dl.append(dt1, dd1, dt2, dd2);
-    art.append(head, etiqueta, pre, dl);
-    li.appendChild(art);
-    lista.appendChild(li);
-  });
-}
-
-function parsearBloquesSkill(texto) {
-  const campos = [
-    ["parte", /^hito\s+o\s+parte\s*:\s*/i],
-    ["pregunta", /^pregunta\s*:\s*/i],
-    ["respuesta", /^respuesta\s+del\s+estudiante\s*:\s*/i],
-    ["criterios", /^criterios\s*:\s*/i],
-    ["grado", /^grado\s*:\s*/i],
-  ];
-  const lineas = String(texto || "").replace(/\r\n?/g, "\n").split("\n")
-    .map((l) => l.replace(/^[\s>*•·\-–—]+/, "").replace(/\s+$/, ""));
-  const encontrados = [];
-  let actual = null;
-  let campo = null;
-  lineas.forEach((linea) => {
-    const coincide = campos.find(([, re]) => re.test(linea));
-    if (coincide) {
-      if (coincide[0] === "parte") { actual = {}; encontrados.push(actual); }
-      if (!actual) return;
-      campo = coincide[0];
-      actual[campo] = linea.replace(coincide[1], "").trim();
-    } else if (!linea.trim()) {
-      campo = null;
-    } else if (actual && (campo === "respuesta" || campo === "pregunta")) {
-      actual[campo] += ` ${linea.trim()}`;
-    }
-  });
-  return encontrados
-    .filter((b) => b.parte && b.respuesta)
-    .map((b) => {
-      const resp = `"${b.respuesta.trim().replace(/^["“]|["”]$/g, "")}"`;
-      return {
-        titulo: b.parte,
-        texto: [
-          `Hito o parte: ${b.parte}`,
-          `Pregunta: ${b.pregunta || ""}`,
-          `Respuesta del estudiante: ${resp}`,
-          `Criterios: ${b.criterios || "por defecto"}`,
-          `Grado: ${b.grado || ""}`,
-        ].join("\n"),
-      };
+async function rpc(funcion, parametros) {
+  if (!SUPABASE_URL) throw Object.assign(new Error("Sin servidor configurado."), { red: true });
+  let respuesta;
+  try {
+    respuesta = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${funcion}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+      body: JSON.stringify(parametros || {}),
     });
+  } catch (e) {
+    throw Object.assign(new Error("No hay conexión con el servidor."), { red: true });
+  }
+  const texto = await respuesta.text();
+  let datos = null;
+  try { datos = texto ? JSON.parse(texto) : null; } catch (e) { /* respuesta no JSON */ }
+  if (!respuesta.ok) {
+    const error = new Error((datos && datos.message) || `Error del servidor (${respuesta.status}).`);
+    error.codigo = datos && datos.code;
+    error.red = respuesta.status >= 500;
+    throw error;
+  }
+  return datos;
 }
 
-function separarBloquesPegados() {
-  const bloques = parsearBloquesSkill(document.getElementById("input-pegar").value);
-  const estadoEl = document.getElementById("pegar-estado");
-  renderBloquesSkill(document.getElementById("pegar-bloques"), bloques, "No encontré bloques. Revisa que el texto incluya líneas como \"Hito o parte:\" y \"Respuesta del estudiante:\".");
-  estadoEl.className = "explica-estado";
-  estadoEl.textContent = bloques.length
-    ? `Encontré ${bloques.length} bloque${bloques.length === 1 ? "" : "s"}. Copia uno a la vez y pégalo en Tutor Feed.`
-    : "No encontré bloques en el texto pegado.";
-  estadoEl.classList.add(bloques.length ? "is-ok" : "is-error");
+// ------------------------------------------------------------
+// ENVÍO AUTOMÁTICO DEL PRIMER RECORRIDO
+// Cola en localStorage con un id de intento generado aquí: si se recarga
+// o falla la red, se reintenta al volver a abrir (o al recuperar la
+// conexión) y el servidor no duplica ni sobrescribe el resultado.
+// ------------------------------------------------------------
+const ENVIOS_KEY = "red1011n25_envios_v1";
+
+function nuevoIdIntento() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  const bytes = new Uint8Array(16);
+  if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+  else for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const h = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
+
+function leerEnvios() {
+  try {
+    const lista = JSON.parse(localStorage.getItem(ENVIOS_KEY) || "[]");
+    return Array.isArray(lista) ? lista.filter((p) => p && typeof p.p_attempt_id === "string") : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function guardarEnvios(lista) {
+  try { localStorage.setItem(ENVIOS_KEY, JSON.stringify(lista)); } catch (e) { /* sin almacenamiento */ }
+}
+
+function encolarResultado(primer) {
+  const nota = calcularNotaDesde(primer.conteos);
+  const payload = {
+    p_attempt_id: primer.attemptId,
+    p_name: primer.nombre,
+    p_grade: estado.grado,
+    p_level: calcularDesempenoDesde(primer.conteos).nivel,
+    p_score: nota.promedio,
+    p_criteria: { comprension: nota.comprension, analisis: nota.analisis, aplicacion: nota.aplicacion, argumentacion: nota.argumentacion },
+    p_counts: primer.conteos,
+    p_answers: construirRespuestasEscritas(),
+    p_completed_at: primer.fecha,
+  };
+  const lista = leerEnvios().filter((p) => p.p_attempt_id !== payload.p_attempt_id);
+  lista.push(payload);
+  guardarEnvios(lista);
+}
+
+function envioPendiente() {
+  const id = estado.primerResultado && estado.primerResultado.attemptId;
+  return !!id && leerEnvios().some((p) => p.p_attempt_id === id);
+}
+
+function mostrarEstadoEnvio(fallo) {
+  const el = document.getElementById("envio-estado");
+  if (!el || !estado.primerResultado || !SUPABASE_URL) return;
+  const pendiente = envioPendiente();
+  el.hidden = false;
+  el.classList.toggle("is-pendiente", pendiente);
+  if (!pendiente) el.textContent = "Tu resultado ya le llegó a tu docente.";
+  else el.textContent = fallo ? "Tu resultado se enviará cuando haya conexión." : "Enviando tu resultado…";
+}
+
+let enviando = false;
+async function enviarPendientes() {
+  if (enviando || !SUPABASE_URL) return;
+  const lista = leerEnvios();
+  if (!lista.length) return;
+  enviando = true;
+  let fallo = false;
+  for (const payload of lista) {
+    try {
+      await rpc("red_submit_result", payload);
+      guardarEnvios(leerEnvios().filter((p) => p.p_attempt_id !== payload.p_attempt_id));
+    } catch (e) {
+      // Se conserva en la cola y se reintenta al volver a abrir o al reconectar.
+      fallo = true;
+    }
+  }
+  enviando = false;
+  // Si mientras se enviaba se encoló otro resultado, se envía también.
+  if (!fallo && leerEnvios().length) { enviarPendientes(); return; }
+  mostrarEstadoEnvio(fallo);
+  if (document.body.dataset.screen === "screen-cierre") anunciar(document.getElementById("envio-estado").textContent);
+}
+
+window.addEventListener("online", enviarPendientes);
 
 // ============================================================
 // EVENTOS GLOBALES
@@ -1611,9 +1511,6 @@ document.addEventListener("click", (e) => {
     case "descargar-reporte":
       descargarReporte();
       break;
-    case "copiar-codigo":
-      copiarCodigoDesempeno();
-      break;
     case "go-cierre":
       generarResumen();
       mostrarPantalla("screen-cierre", "Resumen causal abierto.");
@@ -1639,8 +1536,17 @@ document.addEventListener("click", (e) => {
     case "exportar-docente":
       exportarCSVDocente();
       break;
-    case "go-guia":
-      mostrarPantalla("screen-guia", "Guía docente para retroalimentar con IA.");
+    case "actualizar-docente":
+      cargarResultadosDocente(true);
+      break;
+    case "ver-detalle":
+      mostrarDetalleDocente(btn.dataset.id);
+      break;
+    case "cerrar-detalle":
+      cerrarDetalleDocente();
+      break;
+    case "borrar-resultado":
+      borrarResultadoDocente(btn.dataset.id);
       break;
     case "guardar-explicacion":
       guardarExplicacion(btn.dataset.parte);
@@ -1650,26 +1556,6 @@ document.addEventListener("click", (e) => {
       copiarTexto(pre.textContent, pre, btn);
       break;
     }
-    case "copiar-todo": {
-      const bloques = construirBloquesSkill();
-      copiarTexto(bloques.map((b) => b.texto).join("\n\n"), document.getElementById("resumen-escritas"), btn);
-      break;
-    }
-    case "cargar-prueba":
-      cargarRegistrosPrueba();
-      break;
-    case "quitar-prueba":
-      quitarRegistrosPrueba();
-      break;
-    case "separar-bloques":
-      separarBloquesPegados();
-      break;
-    case "vaciar-docente":
-      vaciarRegistrosDocente();
-      break;
-    case "eliminar-fila-docente":
-      eliminarRegistroDocente(Number(btn.dataset.indice));
-      break;
   }
 });
 
@@ -1748,242 +1634,275 @@ function reiniciarRecorrido(limpiarNombre) {
 }
 
 // ============================================================
-// PANEL DOCENTE — acceso restringido y dashboard de desempeño
+// PANEL DOCENTE — acceso con código y dashboard de resultados
+// El código se valida en el servidor (red_teacher_login), que responde con
+// un token de sesión que expira en 8 h. En este navegador solo se guarda
+// ese token; el código no se guarda en ninguna parte.
 // ============================================================
-// Solo se guarda un hash de la clave docente (nunca la clave en texto plano).
-// Se usa siempre el mismo hash JS propio para que funcione igual en file://.
-const DOCENTE_CLAVE_HASH = "1d3393b986604b69";
+const DOCENTE_TOKEN_KEY = "red1011n25_docente_token";
+const NIVELES = ["Sobresaliente", "Sobresaliente con apoyo puntual", "Logrado alto", "Logrado", "Básico / en proceso", "Inicial — requiere refuerzo"];
+const NIVEL_TONO = {
+  "Sobresaliente": "alto", "Sobresaliente con apoyo puntual": "alto",
+  "Logrado alto": "medio", "Logrado": "medio",
+  "Básico / en proceso": "bajo", "Inicial — requiere refuerzo": "critico",
+};
+const CRITERIOS = [["comprension", "Comprensión"], ["analisis", "Análisis"], ["aplicacion", "Aplicación"], ["argumentacion", "Argumentación"]];
+const docente = { registros: [], detalleId: null };
 
-function hashClaveDocente(clave) {
-  const texto = String(clave || "").trim().toUpperCase();
-  let a = fnv1a(`red1011n25|docente|${texto}`, 0x811c9dc5);
-  let b = fnv1a(`${texto}|panel|n25red`, 0x9747b28c);
-  for (let i = 0; i < 2000; i++) {
-    a = fnv1a(`${a.toString(16)}:${b.toString(16)}:${texto}`, a ^ 0x5bd1e995);
-    b = fnv1a(`${b.toString(16)};${a.toString(16)};${texto}`, b ^ 0x27d4eb2f);
-  }
-  return a.toString(16).padStart(8, "0") + b.toString(16).padStart(8, "0");
+function leerTokenDocente() {
+  try { return localStorage.getItem(DOCENTE_TOKEN_KEY) || ""; } catch (e) { return ""; }
 }
 
-function sesionDocenteActiva() {
-  try { return sessionStorage.getItem(DOCENTE_SESION_KEY) === "1"; } catch (e) { return !!window.__docenteSesionMemoria; }
-}
-
-function fijarSesionDocente(activa) {
-  window.__docenteSesionMemoria = activa;
+function guardarTokenDocente(token) {
   try {
-    if (activa) sessionStorage.setItem(DOCENTE_SESION_KEY, "1");
-    else sessionStorage.removeItem(DOCENTE_SESION_KEY);
-  } catch (e) { /* sin sessionStorage: la sesión vive solo en memoria */ }
+    if (token) localStorage.setItem(DOCENTE_TOKEN_KEY, token);
+    else localStorage.removeItem(DOCENTE_TOKEN_KEY);
+  } catch (e) { /* sin almacenamiento: la sesión dura lo que la pestaña */ }
 }
-const DOCENTE_STORAGE_KEY = "red1011n25_panel_docente";
-const DOCENTE_SESION_KEY = "red1011n25_docente_autenticada";
 
-function copiarCodigoDesempeno() {
-  const codigo = estado.codigoDesempeno || document.getElementById("codigo-desempeno").textContent;
-  const mostrarConfirmacion = () => {
-    const msg = document.getElementById("codigo-copiado-msg");
-    msg.hidden = false;
-    anunciar("Código copiado.");
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(codigo).then(mostrarConfirmacion).catch(() => {
-      window.prompt("Copia este código manualmente:", codigo);
-    });
-  } else {
-    window.prompt("Copia este código manualmente:", codigo);
+function mostrarPuertaDocente(mensaje) {
+  document.getElementById("docente-bloqueado").hidden = false;
+  document.getElementById("docente-dashboard").hidden = true;
+  document.getElementById("docente-error").textContent = mensaje || "";
+  const input = document.getElementById("input-clave-docente");
+  input.value = "";
+  window.setTimeout(() => input.focus(), 40);
+}
+
+function mostrarDashboardDocente() {
+  document.getElementById("docente-bloqueado").hidden = true;
+  document.getElementById("docente-dashboard").hidden = false;
+}
+
+async function abrirPantallaDocente() {
+  mostrarPantalla("screen-docente", "Panel docente.");
+  const token = leerTokenDocente();
+  if (!token) { mostrarPuertaDocente(); return; }
+  try {
+    const sesion = await rpc("red_teacher_session", { p_token: token });
+    if (sesion && sesion.authenticated) {
+      mostrarDashboardDocente();
+      cargarResultadosDocente();
+      return;
+    }
+    guardarTokenDocente("");
+    mostrarPuertaDocente("Tu sesión expiró. Vuelve a ingresar el código.");
+  } catch (e) {
+    mostrarPuertaDocente(e.red ? "No hay conexión con el servidor. Intenta de nuevo." : "");
   }
 }
 
-function abrirPantallaDocente() {
-  const autenticada = sesionDocenteActiva();
-  document.getElementById("docente-bloqueado").hidden = autenticada;
-  document.getElementById("docente-dashboard").hidden = !autenticada;
-  document.getElementById("docente-error").textContent = "";
-  const inputClave = document.getElementById("input-clave-docente");
-  inputClave.value = "";
-  if (autenticada) {
-    renderTablaDocente();
-  }
-  mostrarPantalla("screen-docente", autenticada ? "Panel docente abierto." : "Ingresa el código de acceso docente.");
-  if (!autenticada) inputClave.focus();
-}
-
-function verificarClaveDocente() {
-  const inputClave = document.getElementById("input-clave-docente");
+async function verificarClaveDocente() {
+  const input = document.getElementById("input-clave-docente");
   const error = document.getElementById("docente-error");
-  if (hashClaveDocente(inputClave.value) === DOCENTE_CLAVE_HASH) {
-    fijarSesionDocente(true);
-    error.textContent = "";
-    document.getElementById("docente-bloqueado").hidden = true;
-    document.getElementById("docente-dashboard").hidden = false;
-    renderTablaDocente();
-    anunciar("Acceso docente concedido. Dashboard de desempeño abierto.");
-  } else {
-    error.textContent = "Código incorrecto. Verifica con la coordinación del reto si no lo tienes.";
-    inputClave.value = "";
-    inputClave.focus();
+  const boton = document.getElementById("btn-entrar-docente");
+  const codigo = input.value.trim();
+  if (!codigo) { error.textContent = "Escribe el código de acceso."; input.focus(); return; }
+  boton.disabled = true;
+  error.textContent = "";
+  try {
+    const sesion = await rpc("red_teacher_login", { p_code: codigo });
+    guardarTokenDocente(sesion.token);
+    input.value = "";
+    mostrarDashboardDocente();
+    document.getElementById("titulo-dashboard").focus();
+    anunciar("Acceso docente concedido.");
+    cargarResultadosDocente();
+  } catch (e) {
+    error.textContent = e.red ? "No hay conexión con el servidor. Intenta de nuevo." : "Código incorrecto.";
+    input.value = "";
+    input.focus();
+  } finally {
+    boton.disabled = false;
   }
 }
 
-function cerrarSesionDocente() {
-  fijarSesionDocente(false);
+async function cerrarSesionDocente() {
+  const token = leerTokenDocente();
+  guardarTokenDocente("");
+  docente.registros = [];
+  if (token) rpc("red_teacher_logout", { p_token: token }).catch(() => { /* expira sola en el servidor */ });
   mostrarPantalla("screen-bienvenida", "Sesión docente cerrada.");
 }
 
-function leerRegistrosDocente() {
+function fijarEstadoDashboard(texto, esError) {
+  const el = document.getElementById("dash-estado");
+  el.textContent = texto;
+  el.classList.toggle("is-error", !!esError);
+}
+
+async function cargarResultadosDocente(avisar) {
+  fijarEstadoDashboard("Cargando resultados…");
   try {
-    const datos = JSON.parse(localStorage.getItem(DOCENTE_STORAGE_KEY) || "[]");
-    return Array.isArray(datos) ? datos : [];
+    const datos = await rpc("red_teacher_list_results", { p_token: leerTokenDocente() });
+    docente.registros = Array.isArray(datos) ? datos : [];
+    fijarEstadoDashboard("");
+    renderDashboardDocente();
+    if (docente.detalleId) mostrarDetalleDocente(docente.detalleId, true);
+    if (avisar) anunciar(`Resultados actualizados: ${docente.registros.length}.`);
   } catch (e) {
-    return [];
+    if (e.codigo === "28000") {
+      guardarTokenDocente("");
+      mostrarPuertaDocente("Tu sesión expiró. Vuelve a ingresar el código.");
+      return;
+    }
+    fijarEstadoDashboard(e.red ? "No hay conexión con el servidor. Pulsa Actualizar para reintentar." : e.message, true);
   }
 }
 
-function guardarRegistrosDocente(registros) {
-  try {
-    localStorage.setItem(DOCENTE_STORAGE_KEY, JSON.stringify(registros));
-  } catch (e) {
-    anunciar("No se pudo guardar en este equipo (almacenamiento no disponible).");
-  }
+function normalizarBusqueda(texto) {
+  return String(texto || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 }
 
-function renderTablaDocente() {
-  const registros = leerRegistrosDocente();
+function registrosFiltrados() {
+  const grado = document.getElementById("filtro-grado").value;
+  const busca = normalizarBusqueda(document.getElementById("filtro-nombre").value);
+  return docente.registros.filter((r) => (!grado || r.grade === grado) && (!busca || normalizarBusqueda(r.name).includes(busca)));
+}
+
+function formatearFecha(iso, conHora) {
+  const f = new Date(iso);
+  if (Number.isNaN(f.getTime())) return "—";
+  const opciones = { year: "numeric", month: "short", day: "numeric" };
+  if (conHora) Object.assign(opciones, { hour: "2-digit", minute: "2-digit" });
+  return f.toLocaleDateString("es-CO", opciones);
+}
+
+function chipNivel(nivel) {
+  return `<span class="docente-nivel-chip" data-tono="${NIVEL_TONO[nivel] || "medio"}">${escaparHTML(nivel)}</span>`;
+}
+
+function renderDashboardDocente() {
+  const lista = registrosFiltrados();
+  const total = docente.registros.length;
+  const ficticios = lista.filter((r) => r.is_demo).length;
+
+  document.getElementById("dash-total").textContent = String(lista.length);
+  document.getElementById("dash-total-sub").textContent = lista.length === total
+    ? (ficticios ? `${ficticios} ficticio${ficticios === 1 ? "" : "s"}` : "")
+    : `de ${total} · filtrados${ficticios ? ` · ${ficticios} ficticio${ficticios === 1 ? "" : "s"}` : ""}`;
+  const promedio = lista.length ? lista.reduce((s, r) => s + Number(r.score), 0) / lista.length : null;
+  document.getElementById("dash-promedio").textContent = promedio === null ? "—" : promedio.toFixed(1);
+
+  const niveles = document.getElementById("dash-niveles");
+  niveles.innerHTML = NIVELES.map((n) => {
+    const cuantos = lista.filter((r) => r.level === n).length;
+    const ancho = lista.length ? (cuantos / lista.length) * 100 : 0;
+    return `<li data-tono="${NIVEL_TONO[n]}"><span class="dash-nivel-nombre">${escaparHTML(n)}</span><span class="dash-nivel-barra" aria-hidden="true"><i style="transform:scaleX(${ancho / 100})"></i></span><strong>${cuantos}</strong></li>`;
+  }).join("");
+
   const cuerpo = document.getElementById("docente-tabla-cuerpo");
   const vacio = document.getElementById("docente-vacio");
-  const contador = document.getElementById("docente-contador");
-
-  contador.textContent = `${registros.length} estudiante${registros.length === 1 ? "" : "s"} registrado${registros.length === 1 ? "" : "s"}`;
-
-  if (registros.length === 0) {
-    cuerpo.innerHTML = "";
-    vacio.hidden = false;
-    return;
-  }
-  vacio.hidden = true;
-
-  cuerpo.innerHTML = registros
-    .map((r, i) => `
+  cuerpo.innerHTML = lista.map((r) => `
       <tr>
-        <td>${escaparHTML(r.nombre)}${r.prueba ? ' <span class="chip-prueba">Prueba</span>' : ""}</td>
-        <td>${escaparHTML(r.fecha)}</td>
-        <td>${escaparHTML((Number(r.promedio) || 0).toFixed(1))}</td>
-        <td><span class="docente-nivel-chip">${escaparHTML(r.nivel)}</span></td>
-        <td>${escaparHTML(r.codigo)}</td>
-        <td><button class="docente-borrar" data-action="eliminar-fila-docente" data-indice="${i}">Eliminar</button></td>
-      </tr>`)
-    .join("");
+        <td><span>${escaparHTML(r.name)}${r.is_demo ? ' <span class="chip-ficticio">Ficticio</span>' : ""}</span></td>
+        <td>${escaparHTML(r.grade)}</td>
+        <td>${chipNivel(r.level)}</td>
+        <td>${escaparHTML(Number(r.score).toFixed(1))}</td>
+        <td>${escaparHTML(formatearFecha(r.completed_at))}</td>
+        <td class="docente-acciones">
+          <button class="text-button" data-action="ver-detalle" data-id="${escaparHTML(r.attempt_id)}" aria-label="Ver detalle de ${escaparHTML(r.name)}">Ver detalle</button>
+          <button class="docente-borrar" data-action="borrar-resultado" data-id="${escaparHTML(r.attempt_id)}" aria-label="Borrar el resultado de ${escaparHTML(r.name)}">Borrar</button>
+        </td>
+      </tr>`).join("");
+  vacio.hidden = lista.length > 0;
+  vacio.textContent = total ? "Ningún estudiante coincide con el filtro." : "Todavía no llegan resultados. Aparecerán aquí cuando un estudiante termine su primer recorrido.";
 }
 
-function agregarRegistroDocente(evento) {
-  evento.preventDefault();
-  const inputNombre = document.getElementById("input-nombre-docente");
-  const inputCodigo = document.getElementById("input-codigo-docente");
-  const errorWrap = document.getElementById("docente-form-error");
+function mostrarDetalleDocente(id, silencioso) {
+  const r = docente.registros.find((x) => x.attempt_id === id);
+  const seccion = document.getElementById("docente-detalle");
+  if (!r) { cerrarDetalleDocente(true); return; }
+  docente.detalleId = id;
+  document.getElementById("detalle-meta").textContent = `${r.grade} · ${formatearFecha(r.completed_at, true)}${r.is_demo ? " · Ficticio" : ""}`;
+  document.getElementById("detalle-nombre").textContent = r.name;
+  document.getElementById("detalle-nota").textContent = Number(r.score).toFixed(1);
+  const chip = document.getElementById("detalle-nivel");
+  chip.textContent = r.level;
+  chip.dataset.tono = NIVEL_TONO[r.level] || "medio";
 
-  const nombre = inputNombre.value.trim().replace(/\s+/g, " ");
-  const decodificado = decodificarCodigoDesempeno(inputCodigo.value, nombre);
+  const crit = r.criteria || {};
+  document.getElementById("detalle-criterios").innerHTML = CRITERIOS.map(([clave, nombre]) => {
+    const valor = Number(crit[clave]) || 0;
+    return `<div class="dash-criterio"><div class="dash-criterio-fila"><span>${nombre}</span><strong>${valor.toFixed(1)}</strong></div><span class="dash-criterio-barra" aria-hidden="true"><i style="transform:scaleX(${Math.max(0, Math.min(1, valor / 5))})"></i></span></div>`;
+  }).join("");
 
-  if (!nombre) {
-    errorWrap.textContent = "Escribe el nombre del estudiante.";
-    inputNombre.focus();
-    return;
+  const c = r.counts || {};
+  document.getElementById("detalle-conteos").innerHTML = [
+    `Pistas usadas en los hitos: ${Number(c.pregunta) || 0}`,
+    `Intentos adicionales al relacionar: ${Number(c.transformacion) || 0}`,
+    c.omitida ? "Recomendación: continuó sin completarla" : `Ajustes en la recomendación: ${(Number(c.aplicacion) || 0) + (Number(c.argumentacion) || 0)}`,
+  ].map((t) => `<li>${escaparHTML(t)}</li>`).join("");
+
+  const respuestas = Array.isArray(r.answers) ? r.answers : [];
+  renderBloquesSkill(document.getElementById("detalle-respuestas"), respuestas.map((a) => formatearBloqueSkill(a, r.grade)), "Este estudiante no guardó respuestas escritas.");
+
+  seccion.hidden = false;
+  if (!silencioso) {
+    seccion.scrollIntoView({ block: "start", behavior: MOVIMIENTO_REDUCIDO ? "auto" : "smooth" });
+    document.getElementById("detalle-nombre").focus({ preventScroll: true });
   }
-  if (!decodificado.ok && decodificado.motivo === "formato") {
-    errorWrap.textContent = "Ese código no es válido. Revisa que esté completo y bien escrito (formato RD-XXX-XXXX).";
-    inputCodigo.focus();
-    return;
+}
+
+function cerrarDetalleDocente(silencioso) {
+  const id = docente.detalleId;
+  docente.detalleId = null;
+  document.getElementById("docente-detalle").hidden = true;
+  if (silencioso) return;
+  const boton = id && document.querySelector(`#docente-tabla-cuerpo [data-action="ver-detalle"][data-id="${id}"]`);
+  if (boton) boton.focus();
+}
+
+async function borrarResultadoDocente(id) {
+  const r = docente.registros.find((x) => x.attempt_id === id);
+  if (!r) return;
+  if (!window.confirm(`¿Borrar el resultado de ${r.name}? Esta acción no se puede deshacer.`)) return;
+  try {
+    await rpc("red_teacher_delete_result", { p_token: leerTokenDocente(), p_attempt_id: id });
+    if (docente.detalleId === id) cerrarDetalleDocente(true);
+    anunciar(`Resultado de ${r.name} borrado.`);
+    await cargarResultadosDocente();
+  } catch (e) {
+    if (e.codigo === "28000") { guardarTokenDocente(""); mostrarPuertaDocente("Tu sesión expiró. Vuelve a ingresar el código."); return; }
+    fijarEstadoDashboard(e.red ? "No hay conexión con el servidor. No se borró nada." : e.message, true);
   }
-  if (!decodificado.ok) {
-    errorWrap.textContent = "El código no corresponde a ese nombre. Escribe el nombre tal como el estudiante lo registró en la ruta y revisa el código.";
-    inputCodigo.focus();
-    return;
-  }
-
-  errorWrap.textContent = "";
-  const registros = leerRegistrosDocente();
-  registros.unshift({
-    nombre,
-    codigo: decodificado.codigo,
-    promedio: decodificado.nota.promedio,
-    nivel: decodificado.desempeno.nivel,
-    fecha: new Date().toLocaleDateString("es-CO", { year: "numeric", month: "short", day: "numeric" }),
-  });
-  guardarRegistrosDocente(registros);
-  renderTablaDocente();
-
-  inputNombre.value = "";
-  inputCodigo.value = "";
-  inputNombre.focus();
-  anunciar(`${nombre} agregado al dashboard de desempeño.`);
-}
-
-// Registros de prueba: solo se agregan con su botón y solo se quitan esas filas.
-function cargarRegistrosPrueba() {
-  const reales = leerRegistrosDocente().filter((r) => !r.prueba);
-  const fecha = new Date().toLocaleDateString("es-CO", { year: "numeric", month: "short", day: "numeric" });
-  const pruebas = REGISTROS_PRUEBA.map((p) => {
-    const codigo = generarCodigoDesde(p.nombre, p.conteos);
-    const d = decodificarCodigoDesempeno(codigo, p.nombre);
-    return { nombre: p.nombre, codigo: d.codigo, promedio: d.nota.promedio, nivel: d.desempeno.nivel, fecha, prueba: true };
-  });
-  guardarRegistrosDocente([...pruebas, ...reales]);
-  renderTablaDocente();
-  document.getElementById("input-pegar").value = REGISTROS_PRUEBA.map((p) => p.bloque).join("\n\n");
-  separarBloquesPegados();
-  anunciar("Se cargaron 2 registros de prueba y sus respuestas quedaron separadas en bloques.");
-}
-
-function quitarRegistrosPrueba() {
-  const registros = leerRegistrosDocente();
-  const reales = registros.filter((r) => !r.prueba);
-  guardarRegistrosDocente(reales);
-  renderTablaDocente();
-  anunciar(`${registros.length - reales.length} registro(s) de prueba quitados. Los registros reales no cambiaron.`);
-}
-
-function eliminarRegistroDocente(indice) {
-  const registros = leerRegistrosDocente();
-  if (indice < 0 || indice >= registros.length) return;
-  if (!window.confirm(`¿Eliminar el registro de ${registros[indice].nombre}?`)) return;
-  registros.splice(indice, 1);
-  guardarRegistrosDocente(registros);
-  renderTablaDocente();
-}
-
-function vaciarRegistrosDocente() {
-  if (!window.confirm("¿Vaciar todos los registros guardados en este equipo? Esta acción no se puede deshacer.")) return;
-  guardarRegistrosDocente([]);
-  renderTablaDocente();
 }
 
 function exportarCSVDocente() {
-  const registros = leerRegistrosDocente();
-  if (registros.length === 0) {
-    window.alert("Aún no hay registros para exportar.");
+  const registros = registrosFiltrados();
+  if (!registros.length) {
+    fijarEstadoDashboard("No hay resultados para exportar con este filtro.", true);
     return;
   }
-  const encabezado = ["Estudiante", "Fecha", "Nota", "Nivel", "Código", "Tipo de registro"];
-  const filas = registros.map((r) => [r.nombre, r.fecha, (Number(r.promedio) || 0).toFixed(1), r.nivel, r.codigo, r.prueba ? "Prueba" : "Real"]);
+  const encabezado = ["Estudiante", "Grado", "Nivel", "Nota", "Comprensión", "Análisis", "Aplicación", "Argumentación", "Fecha", "Tipo", "Respuestas escritas"];
+  const num = (v) => (Number(v) || 0).toFixed(1);
+  const filas = registros.map((r) => [
+    r.name, r.grade, r.level, num(r.score),
+    num(r.criteria && r.criteria.comprension), num(r.criteria && r.criteria.analisis),
+    num(r.criteria && r.criteria.aplicacion), num(r.criteria && r.criteria.argumentacion),
+    formatearFecha(r.completed_at, true), r.is_demo ? "Ficticio" : "Real",
+    (Array.isArray(r.answers) ? r.answers : []).map((a) => `${a.parte}: ${a.respuesta}`).join(" | "),
+  ]);
   const csv = [encabezado, ...filas]
     .map((fila) => fila.map((celda) => `"${String(celda).replace(/"/g, '""')}"`).join(","))
     .join("\r\n");
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "dashboard-desempeno-RED-1011-N-25.csv";
+  a.download = "resultados-RED-1011-N-25.csv";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  fijarEstadoDashboard(`CSV descargado con ${registros.length} resultado${registros.length === 1 ? "" : "s"}.`);
 }
 
-document.getElementById("form-docente").addEventListener("submit", agregarRegistroDocente);
 document.getElementById("input-clave-docente").addEventListener("keydown", (e) => {
   if (e.key === "Enter") verificarClaveDocente();
 });
+document.getElementById("filtro-grado").addEventListener("change", renderDashboardDocente);
+document.getElementById("filtro-nombre").addEventListener("input", renderDashboardDocente);
 
 // ============================================================
 // RESTAURAR PROGRESO GUARDADO (si existe)
@@ -1994,6 +1913,7 @@ function restaurarProgreso() {
   const d = leerProgreso();
   if (!d || d.v !== 2) return;
   restaurandoProgreso = true;
+  let primerSinEnviar = false;
   try {
     const nombre = typeof d.nombre === "string" ? d.nombre : "";
     if (nombre && evaluarNombre(nombre).valido) {
@@ -2035,7 +1955,14 @@ function restaurarProgreso() {
         nombre: String(d.primerResultado.nombre || nombre),
         conteos: { pregunta: num(c.pregunta), transformacion: num(c.transformacion), aplicacion: num(c.aplicacion), argumentacion: num(c.argumentacion), omitida: !!c.omitida },
         fecha: d.primerResultado.fecha,
+        attemptId: typeof d.primerResultado.attemptId === "string" ? d.primerResultado.attemptId : "",
       };
+      // Recorridos terminados antes del envío automático: se les asigna un id
+      // y se envían una sola vez (al final, con las respuestas ya restauradas).
+      if (!estado.primerResultado.attemptId) {
+        estado.primerResultado.attemptId = nuevoIdIntento();
+        primerSinEnviar = !!estado.grado;
+      }
     }
     actualizarMapa();
 
@@ -2079,15 +2006,16 @@ function restaurarProgreso() {
     borrarProgreso();
   }
   restaurandoProgreso = false;
+  if (primerSinEnviar && estado.primerResultado) encolarResultado(estado.primerResultado);
   guardarProgreso();
 }
 
 window.addEventListener("pagehide", guardarProgreso);
 
 renderTimeline();
-montarGuias();
 inicializarExplicaciones();
 inicializarAudio();
 actualizarMapa();
 restaurarProgreso();
+enviarPendientes();
 
