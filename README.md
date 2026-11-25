@@ -18,17 +18,17 @@ Que el estudiante explique, como una cadena de causas y efectos, cómo cuatro hi
 
 ## Ruta pedagógica
 
-1. **Bienvenida.** El estudiante escribe su nombre completo (nombre y apellido), puede leer cómo funciona el recorrido y consultar la rúbrica.
+1. **Bienvenida.** El estudiante escribe su nombre completo (nombre y apellido), elige su grado y puede consultar cómo funciona el recorrido y la rúbrica.
 2. **Mapa de la ruta.** Cuatro hitos que se abren en cualquier orden. El hito 01 trae un ejemplo resuelto de cómo se razona una causa y su efecto.
    - 1969 · Nacimiento de internet (ARPANET)
    - 1989 · La World Wide Web
    - 2000s · Masificación del internet móvil
    - 2000s a hoy · Auge de plataformas y redes sociales
-3. **Cada hito.** Imagen, narración en audio con transcripción completa, la relación causa → efecto y una pregunta (elegida al azar de un pequeño banco) con dos pistas progresivas.
-4. **Actividad final.** Relacionar dos transformaciones sociales con el hito que las causó (el par cambia en cada recorrido).
+3. **Cada hito.** Imagen, narración en audio con transcripción completa, la relación causa → efecto y una pregunta (elegida al azar de un pequeño banco) con dos pistas progresivas. Tras acertar, el estudiante explica con sus palabras la causa y el efecto.
+4. **Actividad final.** Relacionar dos transformaciones sociales con el hito que las causó (el par cambia en cada recorrido) y explicar la conexión.
 5. **Retroalimentación.** Si hay errores, cada relación muestra una pista.
-6. **Producto final.** Diseñar una recomendación para un colegio de Montería sobre el uso del celular en la jornada escolar, armando tres bloques: estrategia, justificación y evidencia.
-7. **Cierre.** Resumen de la cadena causal, nivel de desempeño, nota de 1.0 a 5.0, código para la docente y reporte descargable.
+6. **Producto final.** Diseñar una recomendación para un colegio de Montería sobre el uso del celular en la jornada escolar, armando tres bloques (estrategia, justificación y evidencia) y defendiéndola con sus palabras.
+7. **Cierre.** Resumen de la cadena causal, nivel de desempeño, nota de 1.0 a 5.0, sus respuestas escritas y un reporte descargable. El resultado le llega solo a la docente.
 8. **Créditos.**
 
 ## Rúbrica
@@ -40,9 +40,7 @@ Que el estudiante explique, como una cadena de causas y efectos, cómo cuatro hi
 | Aplicación | No completa la recomendación | Elige una estrategia pero sin justificarla bien | Elige una estrategia y la justifica correctamente | La justifica de forma clara, al primer intento |
 | Argumentación | No conecta evidencia con su postura | Conecta evidencia parcialmente | Usa evidencia real de los hitos para defender su postura | Argumenta con precisión y sin contradicciones |
 
-Las explicaciones escritas no cambian la nota automática: la docente las retroalimenta con la skill Tutor Feed y decide su valoración.
-
-La nota es el promedio de los cuatro criterios (escala 1.0 a 5.0). Se calcula con el **primer recorrido completo**: repetir la ruta sirve para practicar, pero no cambia la nota ni el código.
+La nota es el promedio de los cuatro criterios (escala 1.0 a 5.0) y se calcula con el **primer recorrido completo**: repetir la ruta sirve para practicar, pero no cambia la nota ni se vuelve a enviar. Las explicaciones escritas no cambian la nota automática; la docente las retroalimenta aparte.
 
 ## Cómo usarlo
 
@@ -50,30 +48,28 @@ La nota es el promedio de los cuatro criterios (escala 1.0 a 5.0). Se calcula co
 
 1. Abre el enlace del recurso.
 2. Escribe tu nombre y apellido, elige tu grado y pulsa **Abrir la ruta**.
-3. Explora los cuatro hitos: escucha o lee, y responde la pregunta de cada uno.
+3. Explora los cuatro hitos: escucha o lee, responde la pregunta y escribe tu explicación.
 4. Haz la actividad final y diseña tu recomendación.
-5. Después de cada acierto, escribe tu explicación con tus palabras y guárdala.
-6. Al terminar, copia el **código para tu docente** (formato `RD-XXX-XXXX`) y descarga el reporte (incluye tus respuestas escritas) para entregárselo a tu profesora.
+5. Al llegar al cierre, tu resultado se envía solo a tu docente. Verás "Tu resultado ya le llegó a tu docente" o, si no hay conexión, "Tu resultado se enviará cuando haya conexión" (se reintenta al volver a abrir el recurso o al recuperar la red).
 
 Tu avance se guarda en el navegador del equipo que estés usando: si recargas o cierras la pestaña, puedes continuar donde ibas.
 
 ### Docente
 
-1. En la bienvenida, pulsa **Acceso docente** e ingresa el código de acceso. La docente ya lo tiene; no se publica aquí ni aparece en el código fuente (solo se guarda una huella o *hash*).
-2. Escribe el nombre del estudiante tal como lo registró y el código que te muestra. El panel calcula la nota y el nivel. El código solo es válido para ese nombre.
-3. Exporta los registros en CSV cuando quieras. Los registros se guardan solo en el navegador de ese equipo.
+1. En la bienvenida, pulsa **Acceso docente** e ingresa el código de acceso. La docente ya lo tiene; no se publica aquí ni aparece en el código fuente: el servidor solo guarda una huella (*hash*) del código y la compara. La sesión dura 8 horas.
+2. El panel muestra el resumen del curso (estudiantes, promedio y distribución por nivel), la tabla de estudiantes (nombre, grado, nivel, nota y fecha) y, con **Ver detalle**, el desglose por criterio, las pistas e intentos y las respuestas escritas.
+3. Puedes filtrar por grado, buscar por nombre, **Exportar CSV** (respeta el filtro), **Actualizar** y **Borrar** un resultado (pide confirmación y no se puede deshacer).
+4. Los estudiantes marcados como **Ficticio** son datos de demostración (ver más abajo).
 
-## Cómo usar la skill Tutor Feed
+### Retroalimentar las respuestas escritas con Tutor Feed
 
-Además de las actividades de selección (que generan la nota automática y el código RD), el estudiante escribe seis explicaciones con sus palabras:
+Cada estudiante escribe seis explicaciones con sus palabras:
 
-- **Hito 01 a 04:** tras acertar la pregunta, responde "¿Cuál fue la causa de este hito y qué cambió en la forma de compartir información por eso?" (mínimo 15 palabras; el hito queda explorado al guardarla).
+- **Hito 01 a 04:** "¿Cuál fue la causa de este hito y qué cambió en la forma de compartir información por eso?" (mínimo 15 palabras).
 - **Actividad de relaciones:** "Explica cómo se conectan las dos transformaciones con sus hitos" (mínimo 15 palabras).
 - **Recomendación final:** "Defiende tu recomendación con tus palabras, usando al menos un hito como evidencia" (mínimo 20 palabras). Si el estudiante elige "Continuar sin completarla", esta respuesta no aparece.
 
-En la bienvenida el estudiante también elige su grado (10.º u 11.º). Las respuestas escritas no cambian la nota automática ni el código RD.
-
-Al terminar, el cierre y el reporte descargable muestran cada respuesta como un **bloque para la skill**, con una línea por campo:
+En el detalle de cada estudiante, el panel muestra cada respuesta como un **bloque para la skill**, con una línea por campo y un botón **Copiar para Tutor Feed**:
 
 ```
 Hito o parte: Hito 02 · La World Wide Web (1989)
@@ -83,19 +79,29 @@ Criterios: por defecto
 Grado: 11.º
 ```
 
-Pasos para la docente:
+Pasos:
 
-1. Recibe el reporte descargado o el texto que el estudiante copió con **Copiar todo**. Si te lo pega en un mensaje, en el panel docente usa **Pegar respuestas del reporte**: el panel lo separa en bloques.
-2. Abre la Gem [Tutor Feed – Retroalimentación y pistas (De ARPANET al feed)](https://gemini.google.com/gem/5ed2eb3f2dbb).
-3. Pega **un bloque por mensaje** (botón **Copiar para Tutor Feed**).
-4. Revisa la tabla de diagnóstico, la retroalimentación, las pistas graduales, la pregunta de reflexión y la nota para el docente; decide qué pistas entregar.
-5. La skill **no califica**: la valoración de las respuestas escritas la decides tú.
+1. Abre la Gem [Tutor Feed – Retroalimentación y pistas (De ARPANET al feed)](https://gemini.google.com/gem/5ed2eb3f2dbb).
+2. Pega **un bloque por mensaje**.
+3. Revisa la tabla de diagnóstico, la retroalimentación, las pistas graduales, la pregunta de reflexión y la nota para el docente; decide qué pistas entregar.
+4. La skill **no califica**: la valoración de las respuestas escritas la decides tú.
 
-La misma guía está en el panel docente y, sin datos del curso, en el enlace "¿Eres docente? Mira cómo retroalimentar con IA" de la bienvenida.
+## Datos y servidor (Supabase)
 
-### Casos de prueba (los del documento)
+Los resultados se guardan en el proyecto de Supabase que comparte con SophiaLap, sin tocar nada de SophiaLap: todo lo de este RED lleva el prefijo `red_`. El SQL completo está en [`supabase/schema.sql`](supabase/schema.sql) (migraciones `red_schema` y `red_demo_data`).
 
-La guía docente incluye los dos casos con los que se probó la skill en el documento de la actividad: un **caso habitual** (respuesta sobre la World Wide Web con datos completos) y un **caso difícil** (respuesta con un error histórico, sin hito ni pregunta, y con la petición de poner nota). Cada uno trae el mensaje exacto para copiar en Tutor Feed, lo que se esperaba y qué se ajustó. En el panel docente, el botón **Cargar registros de prueba** agrega dos filas marcadas como *Prueba* y deja sus respuestas separadas en bloques; **Quitar registros de prueba** borra solo esas filas.
+- **Tablas:** `red_results` (un resultado por intento), `red_settings` (huella del código docente) y `red_teacher_sessions` (huella de los tokens de sesión). Tienen RLS activado y ninguna política: no se pueden leer ni escribir directamente con la clave pública.
+- **Funciones RPC** (`SECURITY DEFINER`, `search_path` fijo): `red_submit_result` (valida y guarda; no duplica ni sobrescribe un intento ya guardado), `red_teacher_login`, `red_teacher_session`, `red_teacher_logout`, `red_teacher_list_results` y `red_teacher_delete_result`.
+- **Envío sin duplicados:** al llegar al cierre por primera vez, el navegador crea un id de intento, lo guarda en `localStorage` y lo envía. Si la red falla, queda en cola y se reintenta.
+- **Modo sin servidor:** si `SUPABASE_URL` queda vacía en `js/app.js`, el recurso funciona igual para el estudiante, pero sin envío ni panel.
+
+### Datos ficticios
+
+Para mostrar el panel hay 10 estudiantes **ficticios** (nombres inventados, 10.º y 11.º, niveles y notas calculados con la misma rúbrica), marcados con `is_demo = true`. Para borrarlos, ejecuta en el editor SQL de Supabase:
+
+```sql
+delete from public.red_results where is_demo;
+```
 
 ## Publicar en GitHub Pages
 
@@ -117,12 +123,14 @@ También se puede abrir `index.html` directamente desde el computador.
 ├── css/
 │   └── styles.css        Tokens de diseño y estilos, por secciones
 ├── js/
-│   ├── data.js           Hitos, preguntas, pistas, transformaciones y bloques
-│   └── app.js            Navegación, nota, código, reporte, panel docente y progreso
+│   ├── data.js           Hitos, preguntas, pistas, transformaciones, bloques y consignas
+│   └── app.js            Navegación, nota, envío a Supabase, reporte, panel docente y progreso
+├── supabase/
+│   └── schema.sql        Tablas, funciones RPC, permisos y datos ficticios (red_*)
 └── assets/
     ├── audio/            hito-1.mp3 … hito-4.mp3 (narraciones)
     ├── img/              hito-1.jpg … hito-4.jpg
-    └── fonts/            Fraunces, Atkinson Hyperlegible e IBM Plex Mono (solo para los códigos)
+    └── fonts/            Fraunces, Atkinson Hyperlegible e IBM Plex Mono (bloques de Tutor Feed)
 ```
 
 Para editar textos pedagógicos, preguntas o pistas, modifica `js/data.js`.
